@@ -5,7 +5,7 @@ import Controller.WindowController;
 
 import javax.swing.*;
 
-public class RegisterWindow extends JFrame {
+public class RegisterPanel extends JPanel {
     private JPanel main_panel;
     private JPanel container;
     private JButton submit_button;
@@ -18,16 +18,8 @@ public class RegisterWindow extends JFrame {
     private JButton back_button;
     private JTextField form_email;
 
-    public RegisterWindow(){
+    public RegisterPanel(){
 
-        setSize(960,540);
-        setTitle("LaSalleMusic");
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        add(main_panel);
-
-        submit_button.setActionCommand("submit_register");
         back_button.setActionCommand("login");
     }
 
@@ -35,6 +27,10 @@ public class RegisterWindow extends JFrame {
         submit_button.addActionListener(controller);
 
         back_button.addActionListener(win_controller);
+    }
+
+    public JPanel getMain_panel() {
+        return main_panel;
     }
 
     public String getForm_name() {

@@ -5,7 +5,7 @@ import Controller.WindowController;
 
 import javax.swing.*;
 
-public class LoginWindow extends JFrame{
+public class LoginPanel extends JPanel{
     private JPanel main_panel;
     private JTextField form_name;
     private JPasswordField form_password;
@@ -19,15 +19,7 @@ public class LoginWindow extends JFrame{
     private JButton register_button;
 
 
-    public LoginWindow(){
-
-        setSize(960,540);
-        setTitle("LaSalleMusic");
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        add(main_panel);
-        setVisible(true);
+    public LoginPanel(){
 
         register_button.setActionCommand("register");
 
@@ -37,6 +29,10 @@ public class LoginWindow extends JFrame{
         submit_button.addActionListener(controller);
 
         register_button.addActionListener(win_controller);
+    }
+
+    public JPanel getMain_panel() {
+        return main_panel;
     }
 
     public String getForm_name() {

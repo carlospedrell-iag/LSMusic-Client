@@ -3,19 +3,18 @@ package Controller;
 import Model.Entity.ObjectMessage;
 import Model.Entity.User;
 import Model.ServerConnector;
-import View.RegisterWindow;
+import View.RegisterPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDateTime;
 
 public class RegisterController implements ActionListener {
 
-    private RegisterWindow view;
+    private RegisterPanel view;
     private ServerConnector serverConnector;
 
-    public RegisterController(RegisterWindow registerWindow){
-        this.view = registerWindow;
+    public RegisterController(RegisterPanel registerPanel){
+        this.view = registerPanel;
     }
 
     @Override

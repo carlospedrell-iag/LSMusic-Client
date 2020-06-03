@@ -1,33 +1,20 @@
 package Controller;
 
-import View.LoginWindow;
-import View.RegisterWindow;
+import View.MainWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class WindowController implements ActionListener {
 
-    private LoginWindow loginWindow;
-    private RegisterWindow registerWindow;
+    private MainWindow mainWindow;
 
-    public WindowController(LoginWindow loginWindow, RegisterWindow registerWindow){
-        this.loginWindow = loginWindow;
-        this.registerWindow = registerWindow;
+    public WindowController(MainWindow mainWindow){
+        this.mainWindow = mainWindow;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
-            case "login":
-                registerWindow.setVisible(false);
-                loginWindow.setVisible(true);
-                break;
-
-            case "register":
-                loginWindow.setVisible(false);
-                registerWindow.setVisible(true);
-                break;
-        }
+        mainWindow.switchPanel(e.getActionCommand());
     }
 }
