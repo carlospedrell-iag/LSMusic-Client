@@ -40,12 +40,12 @@ public class ObjectMessage implements Serializable {
     }
 
     public String getFormattedErrors(){
-        //retorna una cadena formatejada en HTML amb tots els errors, per mostrar correctament per la GUI
-        String string = "<html>";
+        //retorna una cadena formatejada amb tots els errors, per mostrar correctament per la GUI
+        String string = new String();
+
         for(String error: errors){
-            string += "<br>" + error;
+            string += error + "\n ";
         }
-        string += "</html>";
 
         return string;
     }

@@ -40,7 +40,7 @@ public class MainWindow extends JFrame {
         JOptionPane.showMessageDialog(null,message,"Error",JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccess(String message){
+    public void showMessage(String message){
         JOptionPane.showMessageDialog(null,message);
     }
 

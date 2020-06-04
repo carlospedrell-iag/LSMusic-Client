@@ -6,7 +6,6 @@ import Model.ServerConnector;
 import View.MainWindow;
 import View.RegisterPanel;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -37,7 +36,7 @@ public class RegisterController implements ActionListener {
             mainWindow.showError(output_obj.getFormattedErrors());
         } else {
             //si no hi ha hagut cap error llavors mostrem un missatge i fem login
-            mainWindow.showSuccess("Usuari enregistrat exitosament!");
+            mainWindow.showMessage("Usuari enregistrat exitosament!");
             mainWindow.switchPanel("login");
         }
     }

@@ -34,6 +34,7 @@ public class ServerConnector {
 
         } catch (IOException | ClassNotFoundException e){
             System.out.println("Hi ha hagut un error al connectar amb el servidor");
+            input_obj.addError("Hi ha hagut un error al connectar amb el servidor");
         }
 
         return input_obj;

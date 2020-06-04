@@ -24,11 +24,12 @@ public class User implements Serializable {
     }
 
     public User(String name, String email, String password){
-        //aquest constructor s'utilitza per crear un nou usuari
+        //aquest constructor s'utilitza per crear un nou usuari a la db
         this.name = name;
         this.email = email;
         this.password = password;
         this.created_at = LocalDateTime.now();
+        this.last_access = LocalDateTime.now();
     }
 
     public int getId() {
