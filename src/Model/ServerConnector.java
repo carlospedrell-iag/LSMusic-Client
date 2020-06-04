@@ -1,14 +1,14 @@
 package Model;
 
 import Model.Entity.ObjectMessage;
+import Model.Entity.User;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ServerConnector {
     private Socket client_socket;
@@ -20,8 +20,23 @@ public class ServerConnector {
         setConfig();
     }
 
-    public void registerUser(ObjectMessage user_om){
+    public ObjectMessage sendObject(ObjectMessage om){
+        ObjectMessage input_obj = new ObjectMessage();
 
+        try{
+            client_socket = new Socket(ip,client_port);
+
+            ObjectOutputStream oos = new ObjectOutputStream(client_socket.getOutputStream());
+            oos.writeObject(om);
+
+            ObjectInputStream ois = new ObjectInputStream(client_socket.getInputStream());
+            input_obj = (ObjectMessage)ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e){
+            System.out.println("Hi ha hagut un error al connectar amb el servidor");
+        }
+
+        return input_obj;
     }
 
     private void setConfig(){

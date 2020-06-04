@@ -22,19 +22,10 @@ public class MainWindow extends JFrame {
 
     }
 
-    public LoginPanel getLoginPanel() {
-        return loginPanel;
-    }
-
-    public RegisterPanel getRegisterPanel() {
-        return registerPanel;
-    }
-
     public void switchPanel(String panel_name){
         //aquesta funcio es crida quan es necessita canviar a un altre panel segons el String rebut
         switch(panel_name){
             case "register":
-                System.out.println("Rwegitser");
                 setContentPane(registerPanel.getMain_panel());
                 revalidate();
                 break;
@@ -44,5 +35,23 @@ public class MainWindow extends JFrame {
                 break;
         }
     }
+
+    public void showError(String message){
+        JOptionPane.showMessageDialog(null,message,"Error",JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showSuccess(String message){
+        JOptionPane.showMessageDialog(null,message);
+    }
+
+    public LoginPanel getLoginPanel() {
+        return loginPanel;
+    }
+
+    public RegisterPanel getRegisterPanel() {
+        return registerPanel;
+    }
+
+
 
 }

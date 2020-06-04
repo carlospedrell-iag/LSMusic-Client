@@ -1,16 +1,19 @@
 package Controller;
 
 import View.LoginPanel;
+import View.MainWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginController implements ActionListener {
 
+    private MainWindow mainWindow;
     private LoginPanel view;
 
-    public LoginController(LoginPanel loginPanel){
-        this.view = loginPanel;
+    public LoginController(MainWindow mainWindow){
+        this.mainWindow = mainWindow;
+        this.view = mainWindow.getLoginPanel();
     }
 
     @Override
