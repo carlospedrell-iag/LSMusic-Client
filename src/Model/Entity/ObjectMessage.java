@@ -44,7 +44,7 @@ public class ObjectMessage implements Serializable {
         String string = new String();
 
         for(String error: errors){
-            string += error + "\n ";
+            string += error + "\n";
         }
 
         return string;
@@ -56,5 +56,9 @@ public class ObjectMessage implements Serializable {
 
     public void addError(String error){
         this.errors.add(error);
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 }

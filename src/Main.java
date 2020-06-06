@@ -2,6 +2,7 @@
 import Controller.LoginController;
 import Controller.RegisterController;
 import Controller.WindowController;
+import Model.Entity.User;
 import View.MainWindow;
 
 import javax.swing.*;

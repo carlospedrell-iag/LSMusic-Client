@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.Entity.ObjectMessage;
+import Model.Entity.Session;
 import Model.Entity.User;
 import Model.ServerConnector;
 import View.LoginPanel;
@@ -13,7 +14,6 @@ public class LoginController implements ActionListener {
 
     private MainWindow mainWindow;
     private LoginPanel view;
-    private ServerConnector serverConnector;
 
     public LoginController(MainWindow mainWindow){
         this.mainWindow = mainWindow;
@@ -27,16 +27,16 @@ public class LoginController implements ActionListener {
 
         ObjectMessage user_om = new ObjectMessage(user,"login");
 
-        serverConnector = new ServerConnector();
-        ObjectMessage output_obj = serverConnector.sendObject(user_om);
+        ObjectMessage output_obj = ServerConnector.getInstance().sendObject(user_om);
 
         //si retorna errors els mostrem per GUI
         if(!output_obj.getErrors().isEmpty()){
             mainWindow.showError(output_obj.getFormattedErrors());
         } else {
-            //si no hi ha hagut cap error llavors mostrem un missatge i fem login
-            mainWindow.showMessage("Usuari logejat exitosament!");
-            mainWindow.switchPanel("login");
+            //si no hi ha hagut cap error fem login
+            //iniciem la sessio assignant l'usuari
+            Session.getInstance().setUser((User)output_obj.getObject());
+            mainWindow.switchPanel("home");
         }
     }
 }

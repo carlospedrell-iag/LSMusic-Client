@@ -13,7 +13,6 @@ public class RegisterController implements ActionListener {
 
     private RegisterPanel view;
     private MainWindow mainWindow;
-    private ServerConnector serverConnector;
 
     public RegisterController(MainWindow mainWindow){
         this.view = mainWindow.getRegisterPanel();
@@ -28,12 +27,11 @@ public class RegisterController implements ActionListener {
 
         ObjectMessage user_om = new ObjectMessage(user,"register");
 
-        serverConnector = new ServerConnector();
-        ObjectMessage output_obj = serverConnector.sendObject(user_om);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(user_om);
 
         //si retorna errors els mostrem per GUI
-        if(!output_obj.getErrors().isEmpty()){
-            mainWindow.showError(output_obj.getFormattedErrors());
+        if(!received_obj.getErrors().isEmpty()){
+            mainWindow.showError(received_obj.getFormattedErrors());
         } else {
             //si no hi ha hagut cap error llavors mostrem un missatge i fem login
             mainWindow.showMessage("Usuari enregistrat exitosament!");
