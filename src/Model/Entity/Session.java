@@ -4,7 +4,6 @@ public class Session {
     private User user;
     private static Session instance;
 
-
     public Session(){}
 
     public static Session getInstance(){

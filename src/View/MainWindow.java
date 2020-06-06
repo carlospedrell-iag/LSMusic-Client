@@ -1,5 +1,6 @@
 package View;
 
+import Controller.HomeController;
 import Controller.MusicController;
 import Controller.PlayerController;
 import Controller.PlaylistController;
@@ -11,9 +12,7 @@ public class MainWindow extends JFrame {
 
     private LoginPanel loginPanel;
     private RegisterPanel registerPanel;
-    private MusicPanel musicPanel;
-    private PlaylistPanel playlistPanel;
-    private PlayerPanel playerPanel;
+    private HomePanel homePanel;
 
     public MainWindow(){
         //settings principals
@@ -42,15 +41,14 @@ public class MainWindow extends JFrame {
                 break;
 
             case "home":
-                this.musicPanel = new MusicPanel();
-                this.playlistPanel = new PlaylistPanel();
-                this.playerPanel = new PlayerPanel();
 
-                HomePanel homePanel = new HomePanel(musicPanel,playlistPanel,playerPanel);
+                this.homePanel = new HomePanel();
 
                 homePanel.getMusicPanel().setUpController(new MusicController(this));
                 homePanel.getPlaylistPanel().setUpController(new PlaylistController(this));
                 homePanel.getPlayerPanel().setUpController(new PlayerController(this));
+
+                homePanel.setUpController(new HomeController(this));
 
                 setContentPane(homePanel.getMainPanel());
 
@@ -76,15 +74,7 @@ public class MainWindow extends JFrame {
         return registerPanel;
     }
 
-    public MusicPanel getMusicPanel(){
-        return musicPanel;
-    }
-
-    public PlaylistPanel getPlaylistPanel() {
-        return playlistPanel;
-    }
-
-    public PlayerPanel getPlayerPanel() {
-        return playerPanel;
+    public HomePanel getHomePanel() {
+        return homePanel;
     }
 }

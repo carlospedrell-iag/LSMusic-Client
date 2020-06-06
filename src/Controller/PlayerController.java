@@ -14,7 +14,7 @@ public class PlayerController implements ActionListener {
 
     public PlayerController(MainWindow mainWindow){
         this.mainWindow = mainWindow;
-        this.playerPanel = mainWindow.getPlayerPanel();
+        this.playerPanel = mainWindow.getHomePanel().getPlayerPanel();
     }
 
     @Override

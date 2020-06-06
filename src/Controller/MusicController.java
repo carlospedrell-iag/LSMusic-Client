@@ -17,7 +17,7 @@ public class MusicController implements ActionListener {
 
     public MusicController(MainWindow mainWindow){
         this.mainWindow = mainWindow;
-        this.musicPanel = mainWindow.getMusicPanel();
+        this.musicPanel = mainWindow.getHomePanel().getMusicPanel();
 
         updateTable();
     }
@@ -27,7 +27,7 @@ public class MusicController implements ActionListener {
 
     }
 
-    private void updateTable(){
+    public void updateTable(){
         try{
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
             musicPanel.refreshTable(requestTrackList());

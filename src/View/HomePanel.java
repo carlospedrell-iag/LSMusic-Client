@@ -1,7 +1,10 @@
 package View;
 
+import Controller.HomeController;
 import Controller.MusicController;
+import Controller.PlayerController;
 import Controller.PlaylistController;
+import Model.Entity.Playlist;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +21,12 @@ public class HomePanel {
     private JButton refresh_button;
 
 
-    public HomePanel(MusicPanel musicPanel, PlaylistPanel playlistPanel, PlayerPanel playerPanel){
+    public HomePanel(){
+
+        this.musicPanel = new MusicPanel();
+        this.playlistPanel = new PlaylistPanel();
+        this.playerPanel = new PlayerPanel();
+
         mainPanel = new JPanel(new BorderLayout());
         JPanel container = new JPanel(new GridLayout(1,1));
 
@@ -28,6 +36,9 @@ public class HomePanel {
 
         signout_button = new JButton("Sign Out");
         refresh_button = new JButton("Refresh");
+
+        signout_button.setActionCommand("sign_out");
+        refresh_button.setActionCommand("refresh");
 
         toolBar.add(refresh_button);
         toolBar.add(signout_button);
@@ -46,6 +57,11 @@ public class HomePanel {
         mainPanel.add(playerPanel.getMain_panel(), BorderLayout.SOUTH);
 
 
+    }
+
+    public void setUpController(HomeController controller){
+        signout_button.addActionListener(controller);
+        refresh_button.addActionListener(controller);
     }
 
     public JPanel getMainPanel() {

@@ -18,12 +18,12 @@ public class PlaylistController implements ActionListener {
 
     public PlaylistController(MainWindow mainWindow){
         this.mainWindow = mainWindow;
-        this.playlistPanel = mainWindow.getPlaylistPanel();
+        this.playlistPanel = mainWindow.getHomePanel().getPlaylistPanel();
 
         updatePlaylists();
     }
 
-    private void updatePlaylists(){
+    public void updatePlaylists(){
         try{
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
             playlistPanel.refreshPlaylists(requestPlaylists());

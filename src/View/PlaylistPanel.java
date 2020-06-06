@@ -14,25 +14,24 @@ public class PlaylistPanel {
     private JPanel main_panel;
     private JButton newPlaylist_button;
 
-    private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Play Count", "Rating"};
+    private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Plays", "Rating"};
 
     public PlaylistPanel(){
 
     }
 
     public void refreshPlaylists(ArrayList<Playlist> playlists){
+        tabbedPane.removeAll();
 
         for(Playlist playlist:playlists){
 
             JTable table = new JTable();
-
             DefaultTableModel model = new DefaultTableModel(){
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
                 }
             };
-
             model.setColumnIdentifiers(columnNames);
 
             for(Track track: playlist.getTracks()){
