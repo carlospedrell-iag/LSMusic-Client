@@ -16,9 +16,12 @@ public class PlaylistController implements ActionListener {
     private MainWindow mainWindow;
     private PlaylistPanel playlistPanel;
 
+    private ArrayList<Playlist> user_playlists;
+
     public PlaylistController(MainWindow mainWindow){
         this.mainWindow = mainWindow;
         this.playlistPanel = mainWindow.getHomePanel().getPlaylistPanel();
+
 
         updatePlaylists();
     }
@@ -26,7 +29,8 @@ public class PlaylistController implements ActionListener {
     public void updatePlaylists(){
         try{
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
-            playlistPanel.refreshPlaylists(requestPlaylists());
+            this.user_playlists = requestPlaylists();
+            playlistPanel.refreshPlaylists(user_playlists);
             mainWindow.revalidate();
             System.out.println("Playlists actualitzades");
         } catch (Exception e){
@@ -49,8 +53,28 @@ public class PlaylistController implements ActionListener {
         }
     }
 
+    private void newPlaylist(String name){
+        //Creem una nova playlist i l'enviem al servidor per emmagatzemar
+        int user_id = Session.getInstance().getUser().getId();
+        Playlist playlist = new Playlist(name, user_id);
+
+        ObjectMessage output_obj = new ObjectMessage(playlist,"new_playlist");
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+
+        //si retorna errors els mostrem per GUI
+        if(!received_obj.getErrors().isEmpty()){
+            mainWindow.showError(received_obj.getFormattedErrors());
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        switch(e.getActionCommand()){
+            case "new_playlist":
+                String name = mainWindow.showInputDialog("Nom de la playlist:","New Playlist");
+                newPlaylist(name);
+                updatePlaylists();
+                break;
+        }
     }
 }

@@ -10,12 +10,20 @@ import java.util.ArrayList;
 public class MusicPanel {
     private JPanel main_panel;
     private JTable music_table;
+    private JMenuItem addTrack;
 
     private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Play Count", "Rating"};
 
     public MusicPanel(){
         music_table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         music_table.getTableHeader().setReorderingAllowed(false);
+        music_table.getTableHeader().setEnabled(false);
+        //pop-up menu per afegir tracks a la llista
+        JPopupMenu popupMenu = new JPopupMenu();
+        addTrack = new JMenuItem("Afegir a Llista");
+        addTrack.setActionCommand("add_track");
+        popupMenu.add(addTrack);
+        music_table.setComponentPopupMenu(popupMenu);
     }
 
     public void refreshTable(ArrayList<Track> tracks){
@@ -51,11 +59,14 @@ public class MusicPanel {
     }
 
     public void setUpController(MusicController controller){
-
+        addTrack.addActionListener(controller);
     }
 
     public JPanel getMain_panel() {
         return main_panel;
     }
 
+    public JTable getMusic_table() {
+        return music_table;
+    }
 }

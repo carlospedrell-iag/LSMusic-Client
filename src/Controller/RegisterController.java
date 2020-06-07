@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.Entity.ObjectMessage;
+import Model.Entity.Session;
 import Model.Entity.User;
 import Model.ServerConnector;
 import View.MainWindow;
@@ -35,7 +36,8 @@ public class RegisterController implements ActionListener {
         } else {
             //si no hi ha hagut cap error llavors mostrem un missatge i fem login
             mainWindow.showMessage("Usuari enregistrat exitosament!");
-            mainWindow.switchPanel("login");
+            Session.getInstance().setUser((User)received_obj.getObject());
+            mainWindow.switchPanel("home");
         }
     }
 }

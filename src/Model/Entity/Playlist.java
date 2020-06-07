@@ -18,6 +18,11 @@ public class Playlist implements Serializable {
         this.tracks = tracks;
     }
 
+    public Playlist(String name, int id_user){
+        this.name = name;
+        this.id_user = id_user;
+    }
+
     public int getId() {
         return id;
     }
@@ -32,5 +37,9 @@ public class Playlist implements Serializable {
 
     public ArrayList<Track> getTracks() {
         return tracks;
+    }
+
+    public void addTrack(Track track){
+        tracks.add(track);
     }
 }

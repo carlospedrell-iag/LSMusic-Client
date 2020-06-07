@@ -17,16 +17,16 @@ public class PlaylistPanel {
     private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Plays", "Rating"};
 
     public PlaylistPanel(){
-
+        newPlaylist_button.setActionCommand("new_playlist");
     }
 
     public void refreshPlaylists(ArrayList<Playlist> playlists){
         tabbedPane.removeAll();
 
-        for(Playlist playlist:playlists){
+        for (Playlist playlist : playlists) {
 
             JTable table = new JTable();
-            DefaultTableModel model = new DefaultTableModel(){
+            DefaultTableModel model = new DefaultTableModel() {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -34,10 +34,10 @@ public class PlaylistPanel {
             };
             model.setColumnIdentifiers(columnNames);
 
-            for(Track track: playlist.getTracks()){
+            for (Track track : playlist.getTracks()) {
                 String rating;
                 //formatejem la puntuació
-                if(track.getRating() == -1){
+                if (track.getRating() == -1) {
                     rating = "Not Rated Yet";
                 } else {
                     rating = track.getRating() + "★";
@@ -57,15 +57,19 @@ public class PlaylistPanel {
             JScrollPane scrollPane = new JScrollPane();
             scrollPane.getViewport().add(table);
 
-            tabbedPane.add(playlist.getName(),scrollPane);
+            tabbedPane.add(playlist.getName(), scrollPane);
         }
     }
 
     public void setUpController(PlaylistController controller){
-
+        newPlaylist_button.addActionListener(controller);
     }
 
     public JPanel getMain_panel() {
         return main_panel;
+    }
+
+    public void setTabbedPaneFocus(int index) {
+        this.tabbedPane.setSelectedIndex(index);
     }
 }

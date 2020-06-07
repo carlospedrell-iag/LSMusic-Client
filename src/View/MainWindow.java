@@ -41,17 +41,9 @@ public class MainWindow extends JFrame {
                 break;
 
             case "home":
-
                 this.homePanel = new HomePanel();
-
-                homePanel.getMusicPanel().setUpController(new MusicController(this));
-                homePanel.getPlaylistPanel().setUpController(new PlaylistController(this));
-                homePanel.getPlayerPanel().setUpController(new PlayerController(this));
-
                 homePanel.setUpController(new HomeController(this));
-
                 setContentPane(homePanel.getMainPanel());
-
                 revalidate();
                 break;
         }
@@ -66,6 +58,17 @@ public class MainWindow extends JFrame {
         JOptionPane.showMessageDialog(null,message);
     }
 
+    public int showConfirmMessage(String message){
+        return JOptionPane.showConfirmDialog(null,message,"Warning",JOptionPane.YES_NO_OPTION);
+    }
+
+    public String showInputDialog(String message, String title){
+        return JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE);
+    }
+
+    public int showOptionDialog(String message, String title, Object[] options){
+        return JOptionPane.showOptionDialog(null,message,title,JOptionPane.DEFAULT_OPTION,JOptionPane.PLAIN_MESSAGE,null,options,options[0]);
+    }
     public LoginPanel getLoginPanel() {
         return loginPanel;
     }

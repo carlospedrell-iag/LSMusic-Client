@@ -25,17 +25,17 @@ public class LoginController implements ActionListener {
         //enviem les dades de l'usuari al servidor
         User user = new User(view.getForm_name(), view.getForm_name(),view.getForm_password());
 
-        ObjectMessage user_om = new ObjectMessage(user,"login");
+        ObjectMessage output_obj = new ObjectMessage(user,"login");
 
-        ObjectMessage output_obj = ServerConnector.getInstance().sendObject(user_om);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         //si retorna errors els mostrem per GUI
-        if(!output_obj.getErrors().isEmpty()){
-            mainWindow.showError(output_obj.getFormattedErrors());
+        if(!received_obj.getErrors().isEmpty()){
+            mainWindow.showError(received_obj.getFormattedErrors());
         } else {
             //si no hi ha hagut cap error fem login
             //iniciem la sessio assignant l'usuari
-            Session.getInstance().setUser((User)output_obj.getObject());
+            Session.getInstance().setUser((User)received_obj.getObject());
             mainWindow.switchPanel("home");
         }
     }

@@ -3,8 +3,10 @@ package Controller;
 import View.HomePanel;
 import View.MainWindow;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
 
 public class HomeController implements ActionListener {
 
@@ -19,7 +21,7 @@ public class HomeController implements ActionListener {
         this.mainWindow = mainWindow;
         this.homePanel = mainWindow.getHomePanel();
 
-        this.musicController = new MusicController(mainWindow);
+        this.musicController = new MusicController(mainWindow,this);
         this.playlistController = new PlaylistController(mainWindow);
         this.playerController = new PlayerController(mainWindow);
 
@@ -32,12 +34,21 @@ public class HomeController implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
             case "refresh":
-                musicController.updateTable();
-                playlistController.updatePlaylists();
+                refreshAll();
                 break;
             case "sign_out":
+                int dialogResult = mainWindow.showConfirmMessage("Vols Sortir?");
+
+                if(dialogResult == JOptionPane.YES_OPTION){
+                    mainWindow.switchPanel("login");
+                }
 
                 break;
         }
+    }
+
+    public void refreshAll(){
+        musicController.updateTable();
+        playlistController.updatePlaylists();
     }
 }
