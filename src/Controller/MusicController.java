@@ -85,7 +85,9 @@ public class MusicController implements ActionListener {
                     int playlist_id = user_playlists.get(selected_id).getId();
                     int track_id = tracklist.get(selected_row).getId();
 
-                    PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id);
+                    float rating = getTrackRating(track_id);
+
+                    PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id,rating);
 
                     ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
                     ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
@@ -112,4 +114,25 @@ public class MusicController implements ActionListener {
         }
     }
 
+    private float getTrackRating(int track_id) {
+        //ens retorna el rating del track a nivell local (del usuari logejat)
+        //aixo ho aconseguim rastrejant les playlists cercant si el track es troba en alguna
+
+        float rating = -1;
+
+        for (Playlist p : user_playlists) {
+            for (Track t : p.getTracks()) {
+                System.out.println("TITLE: " + t.getTitle() + " track_id: " + t.getId());
+                if (t.getId() == track_id) {
+                    System.out.println("RATIGNI: " + t.getRating());
+                    rating = t.getRating();
+                }
+            }
+        }
+        return rating;
+    }
 }
+
+
+
+

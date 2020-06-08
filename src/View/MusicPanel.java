@@ -43,7 +43,7 @@ public class MusicPanel {
             if(track.getRating() == -1){
                 rating = " ---";
             } else {
-                rating = "["+track.getRating()+"] " + track.getStarRating();
+                rating = "["+String.format("%.1f", track.getRating())+"] " + track.getStarRating();
             }
             model.addRow(new Object[]{
                     track.getTitle(),

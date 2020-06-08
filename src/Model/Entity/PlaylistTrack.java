@@ -5,9 +5,17 @@ import java.util.ArrayList;
 
 public class PlaylistTrack implements Serializable {
 
+    private int id;
     private int playlist_id;
     private int track_id;
     private float rating;
+
+    public PlaylistTrack(int id, int playlist_id, int track_id, float rating) {
+        this.id = id;
+        this.playlist_id = playlist_id;
+        this.track_id = track_id;
+        this.rating = rating;
+    }
 
     public PlaylistTrack(int playlist_id, int track_id, float rating) {
         this.playlist_id = playlist_id;
@@ -42,5 +50,13 @@ public class PlaylistTrack implements Serializable {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

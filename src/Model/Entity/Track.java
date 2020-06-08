@@ -13,6 +13,8 @@ public class Track implements Serializable {
     private int plays;
     private float rating;
 
+    private int playlist_track_id;
+
     public Track(int id, String title, String artist, String album, String genre, String path, int plays, float rating) {
         this.id = id;
         this.title = title;
@@ -106,5 +108,13 @@ public class Track implements Serializable {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public int getPlaylist_track_id() {
+        return playlist_track_id;
+    }
+
+    public void setPlaylist_track_id(int playlist_track_id) {
+        this.playlist_track_id = playlist_track_id;
     }
 }

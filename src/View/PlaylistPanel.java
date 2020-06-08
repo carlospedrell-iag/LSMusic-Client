@@ -13,6 +13,7 @@ public class PlaylistPanel {
     private JTabbedPane tabbedPane;
     private JPanel main_panel;
     private JButton newPlaylist_button;
+    private JButton deletePlaylist_button;
     private JMenuItem rateTrack;
     private JMenuItem deleteTrack;
     private JPopupMenu popupMenu;
@@ -22,6 +23,7 @@ public class PlaylistPanel {
 
     public PlaylistPanel(){
         newPlaylist_button.setActionCommand("new_playlist");
+        deletePlaylist_button.setActionCommand("delete_playlist");
 
         //pop-up menu per puntuar la canço
         popupMenu = new JPopupMenu();
@@ -70,8 +72,7 @@ public class PlaylistPanel {
             table.getTableHeader().setReorderingAllowed(false);
             table.setComponentPopupMenu(popupMenu);
 
-            JScrollPane scrollPane = new JScrollPane();
-            scrollPane.getViewport().add(table);
+            JScrollPane scrollPane = new JScrollPane(table);
 
             tabbedPane.add(playlist.getName(), scrollPane);
         }
@@ -79,6 +80,7 @@ public class PlaylistPanel {
 
     public void setUpController(PlaylistController controller){
         newPlaylist_button.addActionListener(controller);
+        deletePlaylist_button.addActionListener(controller);
         rateTrack.addActionListener(controller);
         deleteTrack.addActionListener(controller);
     }

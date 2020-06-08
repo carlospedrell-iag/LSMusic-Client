@@ -25,9 +25,40 @@ public class PlaylistController implements ActionListener {
         updatePlaylists();
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch(e.getActionCommand()){
+            case "new_playlist":
+                String name = mainWindow.showInputDialog("Nom de la playlist:","New Playlist");
+                if(name != null){
+                    if(name.isBlank()){
+                        mainWindow.showError("El nom de la llista no pot estar buit.");
+                    }
+                    if(playlistExists(name)){
+                        mainWindow.showError("Aquesta llista ja existeix en la teva biblioteca.");
+                    }
+                    if(!name.isBlank() && !playlistExists(name)){
+                        newPlaylist(name);
+                        updatePlaylists();
+                    }
+                }
+                break;
+            case "delete_playlist":
+                deletePlaylist();
+                homeController.refreshAll();
+                break;
+            case "rate_track":
+                rateTrack();
+                homeController.refreshAll();
+                break;
+            case "delete_track":
+                deleteTrack();
+                homeController.refreshAll();
+        }
+    }
+
     public void updatePlaylists(){
-        //TODO: Playlist con nombre vacio se crea igualmente
-        //TODO: usuario nuevo da error
+        //TODO: valor del float rating es muy grande 3.333333 (en musiccontroller), covnertir a double
         //ens guardem l'index de la tab activa
         int tab_index = playlistPanel.getTabbedPane().getSelectedIndex();
         if(tab_index == -1){ tab_index = 0; }
@@ -36,13 +67,21 @@ public class PlaylistController implements ActionListener {
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
             this.user_playlists = requestPlaylists();
             playlistPanel.refreshPlaylists(user_playlists);
-            //tornem a posar l'indez de la tab activa
-            JTabbedPane tabbedPane = playlistPanel.getTabbedPane();
-            tabbedPane.setSelectedIndex(tab_index);
-            playlistPanel.setTabbedPane(tabbedPane);
 
-            mainWindow.revalidate();
-            System.out.println("Playlists actualitzades");
+            if(!user_playlists.isEmpty()) {
+                //tornem a posar l'indez de la tab activa
+                JTabbedPane tabbedPane = playlistPanel.getTabbedPane();
+
+                if(tab_index > user_playlists.size() + 1){
+                    tab_index = user_playlists.size() + 1;
+                }
+                //TODO: Problemas al eliminar playlists
+                tabbedPane.setSelectedIndex(tab_index);
+                playlistPanel.setTabbedPane(tabbedPane);
+
+                mainWindow.revalidate();
+                System.out.println("Playlists actualitzades");
+            }
         } catch (Exception e){
             e.printStackTrace();
             mainWindow.showError("Error al connectar al servidor");
@@ -78,13 +117,29 @@ public class PlaylistController implements ActionListener {
         }
     }
 
+    private void deletePlaylist(){
+        if(!user_playlists.isEmpty()){
+            ArrayList<String> options = new ArrayList<>();
+
+            for (Playlist p:user_playlists) {
+                options.add(p.getName());
+            }
+
+            String option = mainWindow.showOptionDialog("Escull una Llista","Afegir a Llista",options.toArray());
+            int selected_id = options.indexOf(option);
+
+            if(selected_id != -1){
+                Playlist playlist = user_playlists.get(selected_id);
+
+                ObjectMessage output_obj = new ObjectMessage(playlist,"delete_playlist");
+                ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+            }
+        }
+    }
+
     private void rateTrack(){
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
-        //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
-        JScrollPane scrollPane = (JScrollPane)playlistPanel.getTabbedPane().getComponentAt(playlist_index);
-        JTable table = (JTable)scrollPane.getViewport().getView();
-        //Extreiem el track seleccionat en la UI
-        int track_index = table.getSelectedRow();
+        int track_index = getSelectedTrackIndex();
 
         if(track_index != -1){
             int rating = mainWindow.showRateDialog("Puntuació","Valorar");
@@ -104,28 +159,24 @@ public class PlaylistController implements ActionListener {
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
-            case "new_playlist":
-                String name = mainWindow.showInputDialog("Nom de la playlist:","New Playlist");
-                if(name != null){
-                    if(name.isBlank()){
-                        mainWindow.showError("El nom de la llista no pot estar buit.");
-                    }
-                    if(playlistExists(name)){
-                        mainWindow.showError("Aquesta llista ja existeix en la teva biblioteca.");
-                    }
-                    if(!name.isBlank() || !playlistExists(name)){
-                        newPlaylist(name);
-                        updatePlaylists();
-                    }
-                }
-                break;
-            case "rate_track":
-                rateTrack();
-                homeController.refreshAll();
-                break;
+    private void deleteTrack(){
+        int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
+        int track_index = getSelectedTrackIndex();
+
+        if(track_index != -1){
+
+            int playlist_id = getAbsolutePlaylistId(playlist_index);
+            int track_id = getAbsoluteTrackId(playlist_index,track_index);
+
+            Track track = user_playlists.get(playlist_index).getTracks().get(track_index);
+            PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id);
+            playlistTrack.setId(track.getPlaylist_track_id());
+
+            ObjectMessage output_obj = new ObjectMessage(playlistTrack,"delete_playlist_track");
+            ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+
+        } else {
+            mainWindow.showError("No s'ha seleccionat cap track.");
         }
     }
 
@@ -137,6 +188,15 @@ public class PlaylistController implements ActionListener {
     private int getAbsoluteTrackId(int id_playlist, int id_track){
         //Ens retorna el id absolut del track en la base de dades (no el id del track en la interficie, que seria el relatiu)
         return user_playlists.get(id_playlist).getTracks().get(id_track).getId();
+    }
+
+    private int getSelectedTrackIndex(){
+        int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
+        //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
+        JScrollPane scrollPane = (JScrollPane)playlistPanel.getTabbedPane().getComponentAt(playlist_index);
+        JTable table = (JTable)scrollPane.getViewport().getView();
+        //Extreiem el track seleccionat en la UI
+        return table.getSelectedRow();
     }
 
     private Boolean playlistExists(String name){
