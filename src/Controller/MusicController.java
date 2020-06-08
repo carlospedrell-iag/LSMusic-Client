@@ -1,15 +1,20 @@
 package Controller;
 
 import Model.Entity.*;
+import Model.MusicPlayer;
 import Model.ServerConnector;
 import View.MainWindow;
 import View.MusicPanel;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class MusicController implements ActionListener {
+public class MusicController implements ActionListener, MouseListener{
 
     private MainWindow mainWindow;
     private HomeController homeController;
@@ -25,6 +30,8 @@ public class MusicController implements ActionListener {
         this.user_playlists = requestPlaylists();
         this.homeController = homeController;
         updateTable();
+
+
     }
 
     @Override
@@ -37,7 +44,19 @@ public class MusicController implements ActionListener {
         }
     }
 
+    @Override
+    public void mousePressed(MouseEvent e) {
+        JTable table =(JTable) e.getSource();
+        int selected_row = table.getSelectedRow();
+
+        if (e.getClickCount() == 2 && selected_row != -1) {
+            int track_id = tracklist.get(selected_row).getId();
+            MusicPlayer.getInstance().playTrack(track_id);
+        }
+    }
+
     public void updateTable(){
+
         try{
             this.tracklist = requestTrackList();
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
@@ -122,14 +141,32 @@ public class MusicController implements ActionListener {
 
         for (Playlist p : user_playlists) {
             for (Track t : p.getTracks()) {
-                System.out.println("TITLE: " + t.getTitle() + " track_id: " + t.getId());
                 if (t.getId() == track_id) {
-                    System.out.println("RATIGNI: " + t.getRating());
                     rating = t.getRating();
                 }
             }
         }
         return rating;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
 

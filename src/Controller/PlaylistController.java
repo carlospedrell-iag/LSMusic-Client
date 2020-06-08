@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.Entity.*;
+import Model.MusicPlayer;
 import Model.ServerConnector;
 import View.MainWindow;
 import View.PlaylistPanel;
@@ -8,9 +9,11 @@ import View.PlaylistPanel;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class PlaylistController implements ActionListener {
+public class PlaylistController implements ActionListener, MouseListener {
     private MainWindow mainWindow;
     private PlaylistPanel playlistPanel;
     private HomeController homeController;
@@ -57,8 +60,18 @@ public class PlaylistController implements ActionListener {
         }
     }
 
+    @Override
+    public void mousePressed(MouseEvent e) {
+        JTable table =(JTable) e.getSource();
+
+        if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
+            int playlist_id = playlistPanel.getTabbedPane().getSelectedIndex();
+            int track_id = getAbsoluteTrackId(playlist_id,table.getSelectedRow());
+            MusicPlayer.getInstance().playTrack(track_id);
+        }
+    }
+
     public void updatePlaylists(){
-        //TODO: valor del float rating es muy grande 3.333333 (en musiccontroller), covnertir a double
         //ens guardem l'index de la tab activa
         int tab_index = playlistPanel.getTabbedPane().getSelectedIndex();
         if(tab_index == -1){ tab_index = 0; }
@@ -69,13 +82,13 @@ public class PlaylistController implements ActionListener {
             playlistPanel.refreshPlaylists(user_playlists);
 
             if(!user_playlists.isEmpty()) {
-                //tornem a posar l'indez de la tab activa
                 JTabbedPane tabbedPane = playlistPanel.getTabbedPane();
 
-                if(tab_index > user_playlists.size() + 1){
-                    tab_index = user_playlists.size() + 1;
+                if(tab_index > user_playlists.size() - 1){
+                    tab_index = user_playlists.size() - 1;
                 }
-                //TODO: Problemas al eliminar playlists
+                //TODO: Problemas con el rating a nivel global, cuando se eliminan todas las rating, el rating global no se vuelve a poner a -1
+                //tornem a posar l'index de la tab activa
                 tabbedPane.setSelectedIndex(tab_index);
                 playlistPanel.setTabbedPane(tabbedPane);
 
@@ -86,6 +99,17 @@ public class PlaylistController implements ActionListener {
             e.printStackTrace();
             mainWindow.showError("Error al connectar al servidor");
             mainWindow.revalidate();
+        }
+
+        //assignem els mouse listeners per reproduir cançons
+        int tabcount = playlistPanel.getTabbedPane().getTabCount();
+        for (int i = 0; i < tabcount ; i++) {
+            JScrollPane jScrollPane = (JScrollPane)playlistPanel.getTabbedPane().getComponentAt(i);
+            JTable table = (JTable)jScrollPane.getViewport().getView();
+            if(table.getMouseListeners().length > 0){
+                table.removeMouseListener(this);
+            }
+            table.addMouseListener(this);
         }
     }
 
@@ -118,6 +142,7 @@ public class PlaylistController implements ActionListener {
     }
 
     private void deletePlaylist(){
+        //TODO: Eliminar todos los playlist_track relacionados con la playlist
         if(!user_playlists.isEmpty()){
             ArrayList<String> options = new ArrayList<>();
 
@@ -142,14 +167,12 @@ public class PlaylistController implements ActionListener {
         int track_index = getSelectedTrackIndex();
 
         if(track_index != -1){
-            int rating = mainWindow.showRateDialog("Puntuació","Valorar");
+            int rating = mainWindow.showRateDialog("Puntuació","Puntuar");
             if(rating != -1){
                 int playlist_id = getAbsolutePlaylistId(playlist_index);
                 int track_id = getAbsoluteTrackId(playlist_index,track_index);
 
                 PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id,rating);
-
-                System.out.println("Playlist id: " + playlist_id + " , Track_id: " + track_id + " , Rating: " + rating);
 
                 ObjectMessage output_obj = new ObjectMessage(playlistTrack,"rate_track");
                 ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
@@ -180,14 +203,14 @@ public class PlaylistController implements ActionListener {
         }
     }
 
-    private int getAbsolutePlaylistId(int id){
+    private int getAbsolutePlaylistId(int index){
         //Ens retorna el id absolut de la playlist en la base de dades (no el id de la playlist en la interficie, que seria el relatiu)
-        return user_playlists.get(id).getId();
+        return user_playlists.get(index).getId();
     }
 
-    private int getAbsoluteTrackId(int id_playlist, int id_track){
+    private int getAbsoluteTrackId(int id_playlist, int index_track){
         //Ens retorna el id absolut del track en la base de dades (no el id del track en la interficie, que seria el relatiu)
-        return user_playlists.get(id_playlist).getTracks().get(id_track).getId();
+        return user_playlists.get(id_playlist).getTracks().get(index_track).getId();
     }
 
     private int getSelectedTrackIndex(){
@@ -209,5 +232,25 @@ public class PlaylistController implements ActionListener {
         }
 
         return exists;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }

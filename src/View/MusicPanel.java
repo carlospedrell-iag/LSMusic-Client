@@ -5,6 +5,9 @@ import Model.Entity.Track;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class MusicPanel {
@@ -24,6 +27,7 @@ public class MusicPanel {
         addTrack.setActionCommand("add_track");
         popupMenu.add(addTrack);
         music_table.setComponentPopupMenu(popupMenu);
+
     }
 
     public void refreshTable(ArrayList<Track> tracks){
@@ -60,6 +64,7 @@ public class MusicPanel {
 
     public void setUpController(MusicController controller){
         addTrack.addActionListener(controller);
+        music_table.addMouseListener(controller);
     }
 
     public JPanel getMain_panel() {

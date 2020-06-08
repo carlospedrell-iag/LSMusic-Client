@@ -27,7 +27,7 @@ public class PlaylistPanel {
 
         //pop-up menu per puntuar la canço
         popupMenu = new JPopupMenu();
-        rateTrack = new JMenuItem("Valorar");
+        rateTrack = new JMenuItem("Puntuar");
         rateTrack.setActionCommand("rate_track");
         deleteTrack = new JMenuItem("Eliminar Track");
         deleteTrack.setActionCommand("delete_track");

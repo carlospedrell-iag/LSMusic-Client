@@ -4,11 +4,14 @@ import View.HomePanel;
 import View.MainWindow;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.concurrent.TimeUnit;
 
-public class HomeController implements ActionListener {
+public class HomeController implements ActionListener{
 
     private MainWindow mainWindow;
     private HomePanel homePanel;
@@ -51,4 +54,5 @@ public class HomeController implements ActionListener {
         musicController.updateTable();
         playlistController.updatePlaylists();
     }
+
 }

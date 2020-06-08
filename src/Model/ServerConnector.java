@@ -46,7 +46,7 @@ public class ServerConnector {
         if(instance == null){
             instance = new ServerConnector();
         }
-        return  instance;
+        return instance;
     }
 
     private void setConfig(){
