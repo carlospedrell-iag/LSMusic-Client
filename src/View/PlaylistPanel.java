@@ -13,11 +13,25 @@ public class PlaylistPanel {
     private JTabbedPane tabbedPane;
     private JPanel main_panel;
     private JButton newPlaylist_button;
+    private JMenuItem rateTrack;
+    private JMenuItem deleteTrack;
+    private JPopupMenu popupMenu;
 
-    private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Plays", "Rating"};
+    private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Plays", "Your Rating"};
+
 
     public PlaylistPanel(){
         newPlaylist_button.setActionCommand("new_playlist");
+
+        //pop-up menu per puntuar la canço
+        popupMenu = new JPopupMenu();
+        rateTrack = new JMenuItem("Valorar");
+        rateTrack.setActionCommand("rate_track");
+        deleteTrack = new JMenuItem("Eliminar Track");
+        deleteTrack.setActionCommand("delete_track");
+        popupMenu.add(rateTrack);
+        popupMenu.add(deleteTrack);
+
     }
 
     public void refreshPlaylists(ArrayList<Playlist> playlists){
@@ -38,9 +52,9 @@ public class PlaylistPanel {
                 String rating;
                 //formatejem la puntuació
                 if (track.getRating() == -1) {
-                    rating = "Not Rated Yet";
+                    rating = " -  -  -  -  -";
                 } else {
-                    rating = track.getRating() + "★";
+                    rating = track.getStarRating();
                 }
                 model.addRow(new Object[]{
                         track.getTitle(),
@@ -54,6 +68,8 @@ public class PlaylistPanel {
             table.setModel(model);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.getTableHeader().setReorderingAllowed(false);
+            table.setComponentPopupMenu(popupMenu);
+
             JScrollPane scrollPane = new JScrollPane();
             scrollPane.getViewport().add(table);
 
@@ -63,13 +79,19 @@ public class PlaylistPanel {
 
     public void setUpController(PlaylistController controller){
         newPlaylist_button.addActionListener(controller);
+        rateTrack.addActionListener(controller);
+        deleteTrack.addActionListener(controller);
     }
 
     public JPanel getMain_panel() {
         return main_panel;
     }
 
-    public void setTabbedPaneFocus(int index) {
-        this.tabbedPane.setSelectedIndex(index);
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
+
+    public void setTabbedPane(JTabbedPane tabbedPane) {
+        this.tabbedPane = tabbedPane;
     }
 }

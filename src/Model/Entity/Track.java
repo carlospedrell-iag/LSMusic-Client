@@ -32,6 +32,18 @@ public class Track implements Serializable {
         this.path = path;
     }
 
+    public String getStarRating(){
+        String[] stars = {
+                "★",
+                "★★",
+                "★★★",
+                "★★★★",
+                "★★★★★",
+        };
+
+        return stars[(int)rating - 1];
+    }
+
     public int getId() {
         return id;
     }

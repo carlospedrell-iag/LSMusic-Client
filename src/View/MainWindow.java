@@ -66,8 +66,21 @@ public class MainWindow extends JFrame {
         return JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE);
     }
 
-    public int showOptionDialog(String message, String title, Object[] options){
-        return JOptionPane.showOptionDialog(null,message,title,JOptionPane.DEFAULT_OPTION,JOptionPane.PLAIN_MESSAGE,null,options,options[0]);
+    public String showOptionDialog(String message, String title, Object[] options){
+        return (String)JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE,null,options,options[0]);
+    }
+
+    public int showRateDialog(String message,String title){
+        String[] stars = {
+                "★",
+                "★★",
+                "★★★",
+                "★★★★",
+                "★★★★★",
+        };
+        String s = (String)JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE,null,stars,stars[0]);
+
+        return s.length();
     }
     public LoginPanel getLoginPanel() {
         return loginPanel;
@@ -80,4 +93,5 @@ public class MainWindow extends JFrame {
     public HomePanel getHomePanel() {
         return homePanel;
     }
+
 }

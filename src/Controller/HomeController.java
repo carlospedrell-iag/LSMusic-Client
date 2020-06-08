@@ -22,7 +22,7 @@ public class HomeController implements ActionListener {
         this.homePanel = mainWindow.getHomePanel();
 
         this.musicController = new MusicController(mainWindow,this);
-        this.playlistController = new PlaylistController(mainWindow);
+        this.playlistController = new PlaylistController(mainWindow,this);
         this.playerController = new PlayerController(mainWindow);
 
         homePanel.getMusicPanel().setUpController(this.musicController);

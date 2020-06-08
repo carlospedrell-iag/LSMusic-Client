@@ -41,9 +41,9 @@ public class MusicPanel {
             String rating;
             //formatejem la puntuació
             if(track.getRating() == -1){
-                rating = "Not Rated Yet";
+                rating = " ---";
             } else {
-                rating = track.getRating() + "★";
+                rating = "["+track.getRating()+"] " + track.getStarRating();
             }
             model.addRow(new Object[]{
                     track.getTitle(),

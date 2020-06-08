@@ -45,6 +45,7 @@ public class MusicController implements ActionListener {
             mainWindow.revalidate();
             System.out.println("Taula musica actualitzada");
         } catch (Exception e){
+            e.printStackTrace();
             mainWindow.showError("Error al connectar al servidor");
             mainWindow.revalidate();
         }
@@ -77,15 +78,18 @@ public class MusicController implements ActionListener {
                     options.add(p.getName());
                 }
                 //demanem a quina llista la fiquem
-                int selected_id = mainWindow.showOptionDialog("Escull una Llista","Afegir a Llista",options.toArray());
+                String option = mainWindow.showOptionDialog("Escull una Llista","Afegir a Llista",options.toArray());
+                int selected_id = options.indexOf(option);
 
-                int playlist_id = user_playlists.get(selected_id).getId();
-                int track_id = tracklist.get(selected_row).getId();
+                if(selected_id != -1){
+                    int playlist_id = user_playlists.get(selected_id).getId();
+                    int track_id = tracklist.get(selected_row).getId();
 
-                PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id);
+                    PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id);
 
-                ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
-                ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+                    ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
+                    ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+                }
 
             } else {
                 mainWindow.showError("No s'ha seleccionat cap track.");
