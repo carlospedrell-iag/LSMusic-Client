@@ -55,4 +55,9 @@ public class HomeController implements ActionListener{
         playlistController.updatePlaylists();
     }
 
+    public void initializePlayer(){
+        playerController.initializePlayer();
+    }
+
+
 }

@@ -67,7 +67,6 @@ public class PlaylistController implements ActionListener, MouseListener {
         if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
             int playlist_id = playlistPanel.getTabbedPane().getSelectedIndex();
             int track_id = getAbsoluteTrackId(playlist_id,table.getSelectedRow());
-            MusicPlayer.getInstance().playTrack(track_id);
         }
     }
 

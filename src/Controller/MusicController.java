@@ -7,14 +7,13 @@ import View.MainWindow;
 import View.MusicPanel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class MusicController implements ActionListener, MouseListener{
+public class MusicController implements ActionListener, MouseListener  {
 
     private MainWindow mainWindow;
     private HomeController homeController;
@@ -51,7 +50,12 @@ public class MusicController implements ActionListener, MouseListener{
 
         if (e.getClickCount() == 2 && selected_row != -1) {
             int track_id = tracklist.get(selected_row).getId();
-            MusicPlayer.getInstance().playTrack(track_id);
+
+            if(!MusicPlayer.getInstance().isPlaying()){
+                MusicPlayer.getInstance().setTrack(track_id);
+                MusicPlayer.getInstance().playTrack();
+                homeController.initializePlayer();
+            }
         }
     }
 

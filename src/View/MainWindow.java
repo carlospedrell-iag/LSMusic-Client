@@ -21,6 +21,7 @@ public class MainWindow extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        setMinimumSize(new Dimension(700,500));
         //initzialitzem tots els panels
         loginPanel = new LoginPanel();
         registerPanel = new RegisterPanel();

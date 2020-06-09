@@ -14,6 +14,7 @@ public class Track implements Serializable {
     private float rating;
 
     private int playlist_track_id;
+    private byte[] file;
 
     public Track(int id, String title, String artist, String album, String genre, String path, int plays, float rating) {
         this.id = id;
@@ -116,5 +117,13 @@ public class Track implements Serializable {
 
     public void setPlaylist_track_id(int playlist_track_id) {
         this.playlist_track_id = playlist_track_id;
+    }
+
+    public void setFile(byte[] file) {
+        this.file = file;
+    }
+
+    public byte[] getFile() {
+        return file;
     }
 }
