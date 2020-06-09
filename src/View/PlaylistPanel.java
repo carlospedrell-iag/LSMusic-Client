@@ -39,19 +39,21 @@ public class PlaylistPanel {
     }
 
     public void refreshPlaying(int queue_index){
-        //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
-        JScrollPane scrollPane = (JScrollPane)tabbedPane.getComponentAt(queue_index);
-        JTable table = (JTable)scrollPane.getViewport().getView();
+        if(queue_index != -1){
+            //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
+            JScrollPane scrollPane = (JScrollPane)tabbedPane.getComponentAt(queue_index);
+            JTable table = (JTable)scrollPane.getViewport().getView();
 
-        TableModel model = table.getModel();
-        //actualitzem el simbol de playing en la taula
-        for (int i = 0; i < model.getRowCount(); i++) {
-            model.setValueAt(isPlaying(queue_index,i),i,0);
+            TableModel model = table.getModel();
+            //actualitzem el simbol de playing en la taula
+            for (int i = 0; i < model.getRowCount(); i++) {
+                model.setValueAt(isPlaying(queue_index,i),i,0);
+            }
+            table.setModel(model);
+            JViewport viewport = new JViewport();
+            viewport.setView(table);
+            scrollPane.setViewport(viewport);
         }
-        table.setModel(model);
-        JViewport viewport = new JViewport();
-        viewport.setView(table);
-        scrollPane.setViewport(viewport);
     }
 
 
@@ -109,6 +111,10 @@ public class PlaylistPanel {
             JScrollPane scrollPane = new JScrollPane(table);
 
             tabbedPane.add(playlist.getName(), scrollPane);
+            //actualitzem la cua de reproducció a nova llista
+            if(playlist_index == MusicPlayer.getInstance().getQueue_index()){
+                MusicPlayer.getInstance().setQueuePlaylist(playlist);
+            }
 
             playlist_index++;
         }

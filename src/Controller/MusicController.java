@@ -110,6 +110,7 @@ public class MusicController implements ActionListener, MouseListener  {
 
                     ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
                     ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+
                 }
 
             } else {

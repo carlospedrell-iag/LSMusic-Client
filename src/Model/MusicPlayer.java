@@ -54,7 +54,6 @@ public class MusicPlayer extends Thread{
 
                 if(clip.getMicrosecondPosition() >= clip.getMicrosecondLength()){
                     trackEnd();
-
                 }
 
                 trackStart = false;
@@ -85,11 +84,11 @@ public class MusicPlayer extends Thread{
     public void nextTrack(){
         if(track_index != -1){
             if(track_index < queue.getTracks().size() -1){
-
                 track_index++;
                 setAndPlayTrack(queue.getTracks().get(track_index).getId());
             } else {
                 track_index = -1;
+                stopTrack();
             }
         }
     }
@@ -178,6 +177,10 @@ public class MusicPlayer extends Thread{
         this.track_index = track_index;
     }
 
+    public void setQueuePlaylist(Playlist queue){
+        this.queue = queue;
+    }
+
     private String getFileExtension(String path) {
         int lastIndexOf = path.lastIndexOf(".");
         if (lastIndexOf == -1) {
@@ -217,4 +220,5 @@ public class MusicPlayer extends Thread{
     public Boolean getTrackStart() {
         return trackStart;
     }
+
 }

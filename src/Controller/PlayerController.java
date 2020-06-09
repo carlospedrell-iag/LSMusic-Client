@@ -64,7 +64,6 @@ public class PlayerController extends Thread implements ActionListener {
             }
 
             if(MusicPlayer.getInstance().getTrackStart()){
-                System.out.println("TRACK START");
                 initializePlayer();
             }
         }
