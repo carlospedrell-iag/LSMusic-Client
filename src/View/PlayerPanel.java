@@ -17,12 +17,16 @@ public class PlayerPanel {
     public PlayerPanel(){
         stopButton.setActionCommand("stop");
         playButton.setActionCommand("play");
+        nextButton.setActionCommand("next");
+        previousButton.setActionCommand("previous");
 
     }
 
     public void setUpController(PlayerController controller){
         stopButton.addActionListener(controller);
         playButton.addActionListener(controller);
+        nextButton.addActionListener(controller);
+        previousButton.addActionListener(controller);
     }
 
     public JPanel getMain_panel() {

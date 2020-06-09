@@ -6,7 +6,9 @@ import Model.Entity.Track;
 import Model.MusicPlayer;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.util.ArrayList;
 
 public class PlaylistPanel {
@@ -34,6 +36,22 @@ public class PlaylistPanel {
         popupMenu.add(rateTrack);
         popupMenu.add(deleteTrack);
 
+    }
+
+    public void refreshPlaying(int queue_index){
+        //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
+        JScrollPane scrollPane = (JScrollPane)tabbedPane.getComponentAt(queue_index);
+        JTable table = (JTable)scrollPane.getViewport().getView();
+
+        TableModel model = table.getModel();
+        //actualitzem el simbol de playing en la taula
+        for (int i = 0; i < model.getRowCount(); i++) {
+            model.setValueAt(isPlaying(queue_index,i),i,0);
+        }
+        table.setModel(model);
+        JViewport viewport = new JViewport();
+        viewport.setView(table);
+        scrollPane.setViewport(viewport);
     }
 
 
@@ -75,10 +93,18 @@ public class PlaylistPanel {
 
                 queue_index++;
             }
+
             table.setModel(model);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.getTableHeader().setReorderingAllowed(false);
             table.setComponentPopupMenu(popupMenu);
+
+            //Serveix per centrar el text ( el simbol ▶) en la columna playing
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+            table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
+
+
 
             JScrollPane scrollPane = new JScrollPane(table);
 
@@ -107,11 +133,8 @@ public class PlaylistPanel {
         this.tabbedPane = tabbedPane;
     }
 
-    private String isPlaying(int playlist_index, int queue_index){
-        System.out.println("Mqueui: " + MusicPlayer.getInstance().getQueue_index() + " Queuid: " + playlist_index);
-        System.out.println("Mtracki: " + MusicPlayer.getInstance().getTrack_index() + " Tracki: " + queue_index);
-
-        if(MusicPlayer.getInstance().getQueue_index() == playlist_index && MusicPlayer.getInstance().getTrack_index() == queue_index){
+    private String isPlaying(int queue_index, int track_index){
+        if(MusicPlayer.getInstance().getQueue_index() == queue_index && MusicPlayer.getInstance().getTrack_index() == track_index){
             return "▶";
         } else {
             return "";

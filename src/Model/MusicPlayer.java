@@ -14,7 +14,7 @@ public class MusicPlayer extends Thread{
     private static MusicPlayer instance;
     private static AudioInputStream ais;
     private static Clip clip;
-    private static Boolean playing;
+    private volatile Boolean playing;
     private static File file;
     private static int duration;
     private static int seconds;
@@ -24,8 +24,8 @@ public class MusicPlayer extends Thread{
     private int playlist_id = -1;
     private int track_index = -1;
     private int queue_index = -1;
-    private Boolean trackOver = false;
-    private Boolean trackStart = false;
+    private volatile Boolean trackOver = false;
+    private volatile Boolean trackStart = false;
 
     private Playlist queue;
 
@@ -53,15 +53,20 @@ public class MusicPlayer extends Thread{
                 currentPosition = (int)clip.getMicrosecondPosition() / 1000;
 
                 if(clip.getMicrosecondPosition() >= clip.getMicrosecondLength()){
-                    trackOver = true;
-                    stopTrack();
-                    nextTrack();
-                    System.out.println("STOP");
+                    trackEnd();
+
                 }
 
                 trackStart = false;
             }
         }
+    }
+
+    private void trackEnd(){
+        trackOver = true;
+        stopTrack();
+        nextTrack();
+        System.out.println("STOP");
     }
 
     public void setAndPlayTrack(int track_id){
@@ -150,6 +155,7 @@ public class MusicPlayer extends Thread{
             }catch (IOException e){
                 e.printStackTrace();
             }
+
             trackOver = false;
         }
     }
@@ -165,11 +171,11 @@ public class MusicPlayer extends Thread{
 
     }
 
-    public void setQueue(Playlist queue, int track_index, int queue_index){
+    public void setQueue(Playlist queue,int queue_index, int track_index){
         System.out.println("Track index: " + track_index);
         this.queue = queue;
-        this.track_index = track_index;
         this.queue_index = queue_index;
+        this.track_index = track_index;
     }
 
     private String getFileExtension(String path) {
@@ -184,7 +190,7 @@ public class MusicPlayer extends Thread{
         return clip;
     }
 
-    public static Boolean isPlaying() {
+    public Boolean isPlaying() {
         return playing;
     }
 

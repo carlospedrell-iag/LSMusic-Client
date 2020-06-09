@@ -34,7 +34,13 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
     public void run() {
         while(running){
             if(MusicPlayer.getInstance().isTrackOver()){
-                updatePlaylists();
+                System.out.println("Playlisy: OVER");
+                playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
+            }
+
+            if(MusicPlayer.getInstance().getTrackStart()){
+                System.out.println("Playlisy: START");
+                playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
             }
         }
     }
@@ -81,7 +87,7 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
             int track_index = table.getSelectedRow();
             System.out.println("Playlist ID: " + playlist_id + " queue index: " + table.getSelectedRow());
 
-            MusicPlayer.getInstance().setQueue(user_playlists.get(playlist_id),track_index, playlist_id);
+            MusicPlayer.getInstance().setQueue(user_playlists.get(playlist_id), playlist_id, track_index);
             MusicPlayer.getInstance().setAndPlayTrack(track_id);
             homeController.initializePlayer();
 

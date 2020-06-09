@@ -32,11 +32,13 @@ public class PlayerController extends Thread implements ActionListener {
                 playerPanel.setProgressBarValue(0);
                 break;
             case "play":
-
                 MusicPlayer.getInstance().playTrack();
                 initializePlayer();
-
-
+                break;
+            case "next":
+                System.out.println("NEXT");
+                MusicPlayer.getInstance().nextTrack();
+                initializePlayer();
                 break;
         }
     }
@@ -55,8 +57,6 @@ public class PlayerController extends Thread implements ActionListener {
     public void run() {
         while(running){
 
-            //TODO: ESPERAR A QUE SE CARGUE EL ARCHIVO
-            
             if(MusicPlayer.getInstance().isPlaying()){
                 updatePlayer();
             } else {
@@ -67,8 +67,6 @@ public class PlayerController extends Thread implements ActionListener {
                 System.out.println("TRACK START");
                 initializePlayer();
             }
-
-
         }
     }
 
