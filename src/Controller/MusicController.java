@@ -50,12 +50,8 @@ public class MusicController implements ActionListener, MouseListener  {
 
         if (e.getClickCount() == 2 && selected_row != -1) {
             int track_id = tracklist.get(selected_row).getId();
-
-            if(!MusicPlayer.getInstance().isPlaying()){
-                MusicPlayer.getInstance().setTrack(track_id);
-                MusicPlayer.getInstance().playTrack();
-                homeController.initializePlayer();
-            }
+            MusicPlayer.getInstance().setAndPlayTrack(track_id);
+            homeController.initializePlayer();
         }
     }
 

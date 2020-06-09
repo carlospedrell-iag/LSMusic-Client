@@ -3,6 +3,7 @@ import Controller.LoginController;
 import Controller.RegisterController;
 import Controller.WindowController;
 import Model.Entity.User;
+import Model.MusicPlayer;
 import View.MainWindow;
 
 import javax.swing.*;
@@ -24,6 +25,13 @@ public class Main {
                 mainWindow.getLoginPanel().setUpController(loginController,windowController);
                 mainWindow.getRegisterPanel().setUpController(registerController,windowController);
 
+            }
+        });
+
+        //codi a executar quan es tanca l'aplicació
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                MusicPlayer.getInstance().stopTrack();
             }
         });
     }

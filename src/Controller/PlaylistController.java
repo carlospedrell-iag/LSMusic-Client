@@ -13,19 +13,30 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class PlaylistController implements ActionListener, MouseListener {
+public class PlaylistController extends Thread implements ActionListener, MouseListener {
     private MainWindow mainWindow;
     private PlaylistPanel playlistPanel;
     private HomeController homeController;
 
     private ArrayList<Playlist> user_playlists;
 
+    private volatile Boolean running = true;
     public PlaylistController(MainWindow mainWindow, HomeController homeController){
+        this.start();
         this.mainWindow = mainWindow;
         this.playlistPanel = mainWindow.getHomePanel().getPlaylistPanel();
         this.homeController = homeController;
 
         updatePlaylists();
+    }
+
+    @Override
+    public void run() {
+        while(running){
+            if(MusicPlayer.getInstance().isTrackOver()){
+                updatePlaylists();
+            }
+        }
     }
 
     @Override
@@ -67,6 +78,14 @@ public class PlaylistController implements ActionListener, MouseListener {
         if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
             int playlist_id = playlistPanel.getTabbedPane().getSelectedIndex();
             int track_id = getAbsoluteTrackId(playlist_id,table.getSelectedRow());
+            int track_index = table.getSelectedRow();
+            System.out.println("Playlist ID: " + playlist_id + " queue index: " + table.getSelectedRow());
+
+            MusicPlayer.getInstance().setQueue(user_playlists.get(playlist_id),track_index, playlist_id);
+            MusicPlayer.getInstance().setAndPlayTrack(track_id);
+            homeController.initializePlayer();
+
+            updatePlaylists();
         }
     }
 
