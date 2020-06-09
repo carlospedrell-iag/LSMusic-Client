@@ -15,10 +15,21 @@ public class PlayerPanel {
     private JCheckBox checkBox2;
 
     public PlayerPanel(){
+        Icon stopIcon = new ImageIcon("./resources/icons/stop.png");
+        Icon playIcon = new ImageIcon("./resources/icons/play.png");
+        Icon nextIcon = new ImageIcon("./resources/icons/next.png");
+        Icon previousIcon = new ImageIcon("./resources/icons/previous.png");
+
+        stopButton.setIcon(stopIcon);
+        playButton.setIcon(playIcon);
+        nextButton.setIcon(nextIcon);
+        previousButton.setIcon(previousIcon);
+
         stopButton.setActionCommand("stop");
         playButton.setActionCommand("play");
         nextButton.setActionCommand("next");
         previousButton.setActionCommand("previous");
+
 
     }
 

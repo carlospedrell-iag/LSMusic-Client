@@ -31,8 +31,11 @@ public class HomeController implements ActionListener{
         homePanel.getMusicPanel().setUpController(this.musicController);
         homePanel.getPlaylistPanel().setUpController(this.playlistController);
         homePanel.getPlayerPanel().setUpController(this.playerController);
-    }
 
+    }
+    //TODO: PAUSE BUTTON
+    //TODO: MUSIC PLAY COUNT
+    //TODO: STOP ON SIGN OUT
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){

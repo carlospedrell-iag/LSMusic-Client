@@ -17,11 +17,9 @@ public class MusicPlayer extends Thread{
     private volatile Boolean playing;
     private static File file;
     private static int duration;
-    private static int seconds;
     private static int currentPosition;
     private volatile Boolean running;
     private int track_id = -1;
-    private int playlist_id = -1;
     private int track_index = -1;
     private int queue_index = -1;
     private volatile Boolean trackOver = false;
@@ -48,14 +46,10 @@ public class MusicPlayer extends Thread{
 
         while(running){
             while(playing){
-                seconds = (int)clip.getMicrosecondPosition() / 1000000;
-
                 currentPosition = (int)clip.getMicrosecondPosition() / 1000;
-
                 if(clip.getMicrosecondPosition() >= clip.getMicrosecondLength()){
                     trackEnd();
                 }
-
                 trackStart = false;
             }
         }
@@ -94,7 +88,6 @@ public class MusicPlayer extends Thread{
     }
 
     public void setTrack(int track_id){
-
         //es una canço diferent
         this.track_id = track_id;
         //demana el track al servidor i el descarrega localment
@@ -107,7 +100,6 @@ public class MusicPlayer extends Thread{
         file = new File(path);
 
         System.out.println("Arxiu rebut " + file.getName());
-
 
         byte[] content = track.getFile();
 
@@ -123,15 +115,12 @@ public class MusicPlayer extends Thread{
 
     public void playTrack(){
         try{
-            if(!playing){
+            if(!playing && file != null){
                 ais = AudioSystem.getAudioInputStream(file);
 
                 clip = AudioSystem.getClip();
                 clip.open(ais);
-
                 duration = (int)clip.getMicrosecondLength() / 1000;
-                System.out.println("Track Duration: " + duration);
-
                 clip.start();
 
                 trackOver = false;
@@ -221,4 +210,8 @@ public class MusicPlayer extends Thread{
         return trackStart;
     }
 
+    public void resetQueue() {
+        this.queue_index = -1;
+        this.track_index = -1;
+    }
 }

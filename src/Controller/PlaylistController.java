@@ -162,7 +162,6 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
     }
 
     private void deletePlaylist(){
-        //TODO: Eliminar todos los playlist_track relacionados con la playlist
         if(!user_playlists.isEmpty()){
             ArrayList<String> options = new ArrayList<>();
 
@@ -178,6 +177,11 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
 
                 ObjectMessage output_obj = new ObjectMessage(playlist,"delete_playlist");
                 ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+            }
+
+            //comprovem si la playlist a eliminar es la cua de reproduccio
+            if(selected_id == MusicPlayer.getInstance().getQueue_index()){
+                MusicPlayer.getInstance().resetQueue();
             }
         }
     }
