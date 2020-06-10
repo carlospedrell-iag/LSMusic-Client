@@ -13,8 +13,10 @@ public class PlayerPanel {
     private JProgressBar progressBar;
     private JCheckBox checkBox1;
     private JCheckBox checkBox2;
+    private JLabel player_label;
+    private JLabel progress_label;
 
-    public PlayerPanel(){
+    public PlayerPanel() {
         Icon stopIcon = new ImageIcon("./resources/icons/stop.png");
         Icon playIcon = new ImageIcon("./resources/icons/play.png");
         Icon nextIcon = new ImageIcon("./resources/icons/next.png");
@@ -29,11 +31,9 @@ public class PlayerPanel {
         playButton.setActionCommand("play");
         nextButton.setActionCommand("next");
         previousButton.setActionCommand("previous");
-
-
     }
 
-    public void setUpController(PlayerController controller){
+    public void setUpController(PlayerController controller) {
         stopButton.addActionListener(controller);
         playButton.addActionListener(controller);
         nextButton.addActionListener(controller);
@@ -44,12 +44,19 @@ public class PlayerPanel {
         return main_panel;
     }
 
-    public void setProgressBarMaximum(int maximum){
+    public void setProgressBarMaximum(int maximum) {
         this.progressBar.setMaximum(maximum);
     }
 
-    public void setProgressBarValue(int value){
+    public void setProgressBarValue(int value) {
         this.progressBar.setValue(value);
+    }
 
+    public void setPlayer_label(String player_label) {
+        this.player_label.setText(player_label);
+    }
+
+    public void setProgress_label(String progress_label) {
+        this.progress_label.setText(progress_label);
     }
 }

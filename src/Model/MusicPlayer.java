@@ -1,5 +1,7 @@
 package Model;
 
+import Controller.PlayerController;
+import Controller.PlaylistController;
 import Model.Entity.ObjectMessage;
 import Model.Entity.Playlist;
 import Model.Entity.Track;
@@ -12,19 +14,20 @@ public class MusicPlayer extends Thread{
     private static final String CACHE_PATH = "./music-cache/track_id";
 
     private static MusicPlayer instance;
-    private static AudioInputStream ais;
-    private static Clip clip;
+    private AudioInputStream ais;
+    private Clip clip;
     private volatile Boolean playing;
-    private static File file;
-    private static int duration;
-    private static int currentPosition;
+    private File file;
+    private int duration;
+    private int currentPosition;
     private volatile Boolean running;
     private int track_id = -1;
     private int track_index = -1;
     private int queue_index = -1;
     private volatile Boolean trackOver = false;
     private volatile Boolean trackStart = false;
-
+    private volatile String player_message = "No Music Playing";
+    private Track current_track;
     private Playlist queue;
 
     public MusicPlayer(){
@@ -43,73 +46,56 @@ public class MusicPlayer extends Thread{
     @Override
     public void run(){
         System.out.println("running");
-
         while(running){
             while(playing){
                 currentPosition = (int)clip.getMicrosecondPosition() / 1000;
                 if(clip.getMicrosecondPosition() >= clip.getMicrosecondLength()){
                     trackEnd();
                 }
-                trackStart = false;
+                if(trackStart = true){
+                    trackStart = false;
+                }
+
+            }
+
+            try{
+                sleep(100);
+            } catch (InterruptedException e){
+                e.printStackTrace();
             }
         }
+
     }
 
-    private void trackEnd(){
-        trackOver = true;
-        stopTrack();
-        nextTrack();
-        System.out.println("STOP");
-    }
-
-    public void setAndPlayTrack(int track_id){
-        //Si la canço ja esta descarregada la torna a posar i si no elimina la canço que s'esta reproduint i reprodueix la nova
-        if(this.track_id == track_id){
-            stopTrack();
-            playTrack();
-        } else {
-            stopTrack();
-            deleteTrack();
-            setTrack(track_id);
-            playTrack();
-        }
-    }
-
-    public void nextTrack(){
-        if(track_index != -1){
-            if(track_index < queue.getTracks().size() -1){
-                track_index++;
-                setAndPlayTrack(queue.getTracks().get(track_index).getId());
-            } else {
-                track_index = -1;
-                stopTrack();
-            }
-        }
-    }
-
-    public void setTrack(int track_id){
+    public void setTrack(Track track_request){
+        System.out.println("Downloading");
+        this.player_message = "Downloading";
+        this.current_track = track_request;
         //es una canço diferent
-        this.track_id = track_id;
+        this.track_id = track_request.getId();
         //demana el track al servidor i el descarrega localment
+        System.out.println("estamos en un nuevo thread");
         ObjectMessage om = new ObjectMessage(track_id,"request_file");
         ObjectMessage input_om = ServerConnector.getInstance().sendObject(om);
         Track track = (Track)input_om.getObject();
 
-        String path = CACHE_PATH + track.getId() + getFileExtension(track.getPath());
+        if(track != null){
+            String path = CACHE_PATH + track.getId() + getFileExtension(track.getPath());
 
-        file = new File(path);
+            file = new File(path);
 
-        System.out.println("Arxiu rebut " + file.getName());
+            System.out.println("Arxiu rebut " + file.getName());
 
-        byte[] content = track.getFile();
+            byte[] content = track.getFile();
 
-        try{
-            FileOutputStream fs = new FileOutputStream(path);
-            fs.write(content);
-            fs.close();
+            try{
+                FileOutputStream fs = new FileOutputStream(path);
+                fs.write(content);
+                fs.close();
 
-        }catch (IOException e){
-            e.printStackTrace();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -126,7 +112,9 @@ public class MusicPlayer extends Thread{
                 trackOver = false;
                 trackStart = true;
                 playing = true;
+
                 System.out.println("Playing.");
+                this.player_message = "Now Playing";
             }
 
         } catch ( Exception e){
@@ -143,8 +131,33 @@ public class MusicPlayer extends Thread{
             }catch (IOException e){
                 e.printStackTrace();
             }
-
+            this.player_message = "No Music Playing";
             trackOver = false;
+        }
+
+    }
+
+    public void nextTrack(){
+        if(track_index != -1){
+            if(track_index < queue.getTracks().size() -1){
+                track_index++;
+                setAndPlayTrack(queue.getTracks().get(track_index));
+            } else {
+                track_index = -1;
+                stopTrack();
+            }
+        }
+    }
+
+    public void previousTrack(){
+        if(track_index != -1){
+            if(track_index > 0){
+                track_index--;
+                setAndPlayTrack(queue.getTracks().get(track_index));
+            } else {
+                track_index = -1;
+                stopTrack();
+            }
         }
     }
 
@@ -156,7 +169,33 @@ public class MusicPlayer extends Thread{
                 System.out.println("Error en eliminar archiu.");
             }
         }
+    }
 
+    public void setAndPlayTrack(Track track){
+        //Si la canço ja esta descarregada la torna a posar i si no elimina la canço que s'esta reproduint i reprodueix la nova
+        if(this.track_id == track.getId()){
+            stopTrack();
+            playTrack();
+        } else {
+
+            Thread thread = new Thread("Download") {
+                public void run(){
+                    stopTrack();
+                    deleteTrack();
+                    setTrack(track);
+                    playTrack();
+                }
+            };
+
+            thread.start();
+        }
+    }
+
+    private void trackEnd(){
+        trackOver = true;
+        stopTrack();
+        nextTrack();
+        System.out.println("STOP");
     }
 
     public void setQueue(Playlist queue,int queue_index, int track_index){
@@ -170,6 +209,11 @@ public class MusicPlayer extends Thread{
         this.queue = queue;
     }
 
+    public void resetQueue() {
+        this.queue_index = -1;
+        this.track_index = -1;
+    }
+
     private String getFileExtension(String path) {
         int lastIndexOf = path.lastIndexOf(".");
         if (lastIndexOf == -1) {
@@ -178,19 +222,19 @@ public class MusicPlayer extends Thread{
         return path.substring(lastIndexOf);
     }
 
-    public Clip getClip() {
-        return clip;
+    public void destroy(){
+        instance = null;
     }
 
     public Boolean isPlaying() {
         return playing;
     }
 
-    public static int getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public static int getCurrentPosition() {
+    public int getCurrentPosition() {
         return currentPosition;
     }
 
@@ -210,8 +254,11 @@ public class MusicPlayer extends Thread{
         return trackStart;
     }
 
-    public void resetQueue() {
-        this.queue_index = -1;
-        this.track_index = -1;
+    public String getPlayer_message() {
+        return player_message;
+    }
+
+    public Track getCurrent_track() {
+        return current_track;
     }
 }

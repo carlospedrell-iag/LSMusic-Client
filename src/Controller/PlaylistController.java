@@ -21,7 +21,8 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
     private ArrayList<Playlist> user_playlists;
 
     private volatile Boolean running = true;
-    public PlaylistController(MainWindow mainWindow, HomeController homeController){
+
+    public PlaylistController(MainWindow mainWindow, HomeController homeController) {
         this.start();
         this.mainWindow = mainWindow;
         this.playlistPanel = mainWindow.getHomePanel().getPlaylistPanel();
@@ -32,30 +33,39 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
 
     @Override
     public void run() {
-        while(running){
-            if(MusicPlayer.getInstance().isTrackOver()){
+
+
+        while (running) {
+
+            if (MusicPlayer.getInstance().isTrackOver()) {
                 playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
             }
 
-            if(MusicPlayer.getInstance().getTrackStart()){
+            if (MusicPlayer.getInstance().getTrackStart()) {
                 playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
+            }
+
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
+        switch (e.getActionCommand()) {
             case "new_playlist":
-                String name = mainWindow.showInputDialog("Nom de la playlist:","New Playlist");
-                if(name != null){
-                    if(name.isBlank()){
+                String name = mainWindow.showInputDialog("Nom de la playlist:", "New Playlist");
+                if (name != null) {
+                    if (name.isBlank()) {
                         mainWindow.showError("El nom de la llista no pot estar buit.");
                     }
-                    if(playlistExists(name)){
+                    if (playlistExists(name)) {
                         mainWindow.showError("Aquesta llista ja existeix en la teva biblioteca.");
                     }
-                    if(!name.isBlank() && !playlistExists(name)){
+                    if (!name.isBlank() && !playlistExists(name)) {
                         newPlaylist(name);
                         updatePlaylists();
                     }
@@ -77,37 +87,39 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
 
     @Override
     public void mousePressed(MouseEvent e) {
-        JTable table =(JTable) e.getSource();
+        JTable table = (JTable) e.getSource();
 
         if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
             int playlist_id = playlistPanel.getTabbedPane().getSelectedIndex();
-            int track_id = getAbsoluteTrackId(playlist_id,table.getSelectedRow());
+            Track track = getTrack(playlist_id, table.getSelectedRow());
             int track_index = table.getSelectedRow();
+
             MusicPlayer.getInstance().setQueue(user_playlists.get(playlist_id), playlist_id, track_index);
-            MusicPlayer.getInstance().setAndPlayTrack(track_id);
+            MusicPlayer.getInstance().setAndPlayTrack(track);
             homeController.initializePlayer();
 
             updatePlaylists();
         }
     }
 
-    public void updatePlaylists(){
+    public void updatePlaylists() {
         //ens guardem l'index de la tab activa
         int tab_index = playlistPanel.getTabbedPane().getSelectedIndex();
-        if(tab_index == -1){ tab_index = 0; }
+        if (tab_index == -1) {
+            tab_index = 0;
+        }
 
-        try{
+        try {
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
             this.user_playlists = requestPlaylists();
             playlistPanel.refreshPlaylists(user_playlists);
 
-            if(!user_playlists.isEmpty()) {
+            if (!user_playlists.isEmpty()) {
                 JTabbedPane tabbedPane = playlistPanel.getTabbedPane();
 
-                if(tab_index > user_playlists.size() - 1){
+                if (tab_index > user_playlists.size() - 1) {
                     tab_index = user_playlists.size() - 1;
                 }
-                //TODO: Problemas con el rating a nivel global, cuando se eliminan todas las rating, el rating global no se vuelve a poner a -1
                 //tornem a posar l'index de la tab activa
                 tabbedPane.setSelectedIndex(tab_index);
                 playlistPanel.setTabbedPane(tabbedPane);
@@ -115,7 +127,7 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
                 mainWindow.revalidate();
                 System.out.println("Playlists actualitzades");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             mainWindow.showError("Error al connectar al servidor");
             mainWindow.revalidate();
@@ -123,82 +135,82 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
 
         //assignem els mouse listeners per reproduir cançons
         int tabcount = playlistPanel.getTabbedPane().getTabCount();
-        for (int i = 0; i < tabcount ; i++) {
-            JScrollPane jScrollPane = (JScrollPane)playlistPanel.getTabbedPane().getComponentAt(i);
-            JTable table = (JTable)jScrollPane.getViewport().getView();
-            if(table.getMouseListeners().length > 0){
+        for (int i = 0; i < tabcount; i++) {
+            JScrollPane jScrollPane = (JScrollPane) playlistPanel.getTabbedPane().getComponentAt(i);
+            JTable table = (JTable) jScrollPane.getViewport().getView();
+            if (table.getMouseListeners().length > 0) {
                 table.removeMouseListener(this);
             }
             table.addMouseListener(this);
         }
     }
 
-    private ArrayList<Playlist> requestPlaylists(){
+    private ArrayList<Playlist> requestPlaylists() {
         //demanem al servidor la llista de playlists de l'usuari
         User session_user = Session.getInstance().getUser();
-        ObjectMessage output_obj = new ObjectMessage(session_user,"request_playlists");
+        ObjectMessage output_obj = new ObjectMessage(session_user, "request_playlists");
         ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
-        if(received_obj.getObject() instanceof ArrayList){
-            return (ArrayList<Playlist>)received_obj.getObject();
+        if (received_obj.getObject() instanceof ArrayList) {
+            return (ArrayList<Playlist>) received_obj.getObject();
         } else {
             System.out.println("Invalid Object");
             return null;
         }
     }
 
-    private void newPlaylist(String name){
+    private void newPlaylist(String name) {
         //Creem una nova playlist i l'enviem al servidor per emmagatzemar
         int user_id = Session.getInstance().getUser().getId();
         Playlist playlist = new Playlist(name, user_id);
 
-        ObjectMessage output_obj = new ObjectMessage(playlist,"new_playlist");
+        ObjectMessage output_obj = new ObjectMessage(playlist, "new_playlist");
         ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         //si retorna errors els mostrem per GUI
-        if(!received_obj.getErrors().isEmpty()){
+        if (!received_obj.getErrors().isEmpty()) {
             mainWindow.showError(received_obj.getFormattedErrors());
         }
     }
 
-    private void deletePlaylist(){
-        if(!user_playlists.isEmpty()){
+    private void deletePlaylist() {
+        if (!user_playlists.isEmpty()) {
             ArrayList<String> options = new ArrayList<>();
 
-            for (Playlist p:user_playlists) {
+            for (Playlist p : user_playlists) {
                 options.add(p.getName());
             }
 
-            String option = mainWindow.showOptionDialog("Escull una Llista","Afegir a Llista",options.toArray());
+            String option = mainWindow.showOptionDialog("Escull una Llista", "Afegir a Llista", options.toArray());
             int selected_id = options.indexOf(option);
 
-            if(selected_id != -1){
+            if (selected_id != -1) {
                 Playlist playlist = user_playlists.get(selected_id);
 
-                ObjectMessage output_obj = new ObjectMessage(playlist,"delete_playlist");
+                ObjectMessage output_obj = new ObjectMessage(playlist, "delete_playlist");
                 ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
             }
 
             //comprovem si la playlist a eliminar es la cua de reproduccio
-            if(selected_id == MusicPlayer.getInstance().getQueue_index()){
+            if (selected_id == MusicPlayer.getInstance().getQueue_index()) {
                 MusicPlayer.getInstance().resetQueue();
             }
         }
     }
 
-    private void rateTrack(){
+    private void rateTrack() {
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
         int track_index = getSelectedTrackIndex();
 
-        if(track_index != -1){
-            int rating = mainWindow.showRateDialog("Puntuació","Puntuar");
-            if(rating != -1){
+        if (track_index != -1) {
+            int rating = mainWindow.showRateDialog("Puntuació", "Puntuar");
+            if (rating != -1) {
                 int playlist_id = getAbsolutePlaylistId(playlist_index);
-                int track_id = getAbsoluteTrackId(playlist_index,track_index);
+                int track_id = getAbsoluteTrackId(playlist_index, track_index);
 
-                PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id,rating);
+                PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id, track_id, rating);
 
-                ObjectMessage output_obj = new ObjectMessage(playlistTrack,"rate_track");
+                ObjectMessage output_obj = new ObjectMessage(playlistTrack, "rate_track");
                 ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
             }
         } else {
@@ -206,20 +218,20 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
         }
     }
 
-    private void deleteTrack(){
+    private void deleteTrack() {
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
         int track_index = getSelectedTrackIndex();
 
-        if(track_index != -1){
+        if (track_index != -1) {
 
             int playlist_id = getAbsolutePlaylistId(playlist_index);
-            int track_id = getAbsoluteTrackId(playlist_index,track_index);
+            int track_id = getAbsoluteTrackId(playlist_index, track_index);
 
             Track track = user_playlists.get(playlist_index).getTracks().get(track_index);
-            PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id);
+            PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id, track_id);
             playlistTrack.setId(track.getPlaylist_track_id());
 
-            ObjectMessage output_obj = new ObjectMessage(playlistTrack,"delete_playlist_track");
+            ObjectMessage output_obj = new ObjectMessage(playlistTrack, "delete_playlist_track");
             ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         } else {
@@ -227,34 +239,38 @@ public class PlaylistController extends Thread implements ActionListener, MouseL
         }
     }
 
-    private int getAbsolutePlaylistId(int index){
+    private int getAbsolutePlaylistId(int index) {
         //Ens retorna el id absolut de la playlist en la base de dades (no el id de la playlist en la interficie, que seria el relatiu)
         return user_playlists.get(index).getId();
     }
 
-    private int getAbsoluteTrackId(int id_playlist, int index_track){
+    private int getAbsoluteTrackId(int id_playlist, int index_track) {
         //Ens retorna el id absolut del track en la base de dades (no el id del track en la interficie, que seria el relatiu)
         return user_playlists.get(id_playlist).getTracks().get(index_track).getId();
     }
 
-    private int getSelectedTrackIndex(){
+    private Track getTrack(int id_playlist, int index_track) {
+        //Ens retorna el id absolut del track en la base de dades (no el id del track en la interficie, que seria el relatiu)
+        return user_playlists.get(id_playlist).getTracks().get(index_track);
+    }
+
+    private int getSelectedTrackIndex() {
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
         //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
-        JScrollPane scrollPane = (JScrollPane)playlistPanel.getTabbedPane().getComponentAt(playlist_index);
-        JTable table = (JTable)scrollPane.getViewport().getView();
+        JScrollPane scrollPane = (JScrollPane) playlistPanel.getTabbedPane().getComponentAt(playlist_index);
+        JTable table = (JTable) scrollPane.getViewport().getView();
         //Extreiem el track seleccionat en la UI
         return table.getSelectedRow();
     }
 
-    private Boolean playlistExists(String name){
+    private Boolean playlistExists(String name) {
         Boolean exists = false;
 
-        for( Playlist p:user_playlists){
-            if(p.getName().equals(name)){
+        for (Playlist p : user_playlists) {
+            if (p.getName().equals(name)) {
                 exists = true;
             }
         }
-
         return exists;
     }
 

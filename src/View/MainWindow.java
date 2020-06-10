@@ -14,14 +14,14 @@ public class MainWindow extends JFrame {
     private RegisterPanel registerPanel;
     private HomePanel homePanel;
 
-    public MainWindow(){
+    public MainWindow() {
         //settings principals
-        setSize(1200,800);
+        setSize(1200, 800);
         setTitle("LaSalleMusic");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-        setMinimumSize(new Dimension(700,500));
+        setMinimumSize(new Dimension(840, 500));
         //initzialitzem tots els panels
         loginPanel = new LoginPanel();
         registerPanel = new RegisterPanel();
@@ -29,9 +29,9 @@ public class MainWindow extends JFrame {
         setContentPane(loginPanel.getMain_panel());
     }
 
-    public void switchPanel(String panel_name){
+    public void switchPanel(String panel_name) {
         //aquesta funcio es crida quan es necessita canviar a un altre panel segons el String rebut
-        switch(panel_name){
+        switch (panel_name) {
             case "register":
                 setContentPane(registerPanel.getMain_panel());
                 revalidate();
@@ -51,27 +51,27 @@ public class MainWindow extends JFrame {
     }
 
 
-    public void showError(String message){
-        JOptionPane.showMessageDialog(null,message,"Error",JOptionPane.ERROR_MESSAGE);
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showMessage(String message){
-        JOptionPane.showMessageDialog(null,message);
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
 
-    public int showConfirmMessage(String message){
-        return JOptionPane.showConfirmDialog(null,message,"Warning",JOptionPane.YES_NO_OPTION);
+    public int showConfirmMessage(String message) {
+        return JOptionPane.showConfirmDialog(null, message, "Warning", JOptionPane.YES_NO_OPTION);
     }
 
-    public String showInputDialog(String message, String title){
-        return JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE);
+    public String showInputDialog(String message, String title) {
+        return JOptionPane.showInputDialog(null, message, title, JOptionPane.PLAIN_MESSAGE);
     }
 
-    public String showOptionDialog(String message, String title, Object[] options){
-        return (String)JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE,null,options,options[0]);
+    public String showOptionDialog(String message, String title, Object[] options) {
+        return (String) JOptionPane.showInputDialog(null, message, title, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
     }
 
-    public int showRateDialog(String message,String title){
+    public int showRateDialog(String message, String title) {
         String[] stars = {
                 "★",
                 "★★",
@@ -79,10 +79,11 @@ public class MainWindow extends JFrame {
                 "★★★★",
                 "★★★★★",
         };
-        String s = (String)JOptionPane.showInputDialog(null,message,title,JOptionPane.PLAIN_MESSAGE,null,stars,stars[0]);
-
+        String s = (String) JOptionPane.showInputDialog(null, message, title, JOptionPane.PLAIN_MESSAGE, null, stars, stars[0]);
+        //TODO: alguna opcion parece fallar NullPointerException
         return s.length();
     }
+
     public LoginPanel getLoginPanel() {
         return loginPanel;
     }

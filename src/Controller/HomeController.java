@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.MusicPlayer;
 import View.HomePanel;
 import View.MainWindow;
 
@@ -35,7 +36,7 @@ public class HomeController implements ActionListener{
     }
     //TODO: PAUSE BUTTON
     //TODO: MUSIC PLAY COUNT
-    //TODO: STOP ON SIGN OUT
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
@@ -48,6 +49,10 @@ public class HomeController implements ActionListener{
                 if(dialogResult == JOptionPane.YES_OPTION){
                     mainWindow.switchPanel("login");
                 }
+
+                MusicPlayer.getInstance().stopTrack();
+                MusicPlayer.getInstance().deleteTrack();
+                MusicPlayer.getInstance().destroy();
 
                 break;
         }

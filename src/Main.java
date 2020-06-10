@@ -32,6 +32,7 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 MusicPlayer.getInstance().stopTrack();
+                MusicPlayer.getInstance().deleteTrack();
             }
         });
     }

@@ -29,8 +29,6 @@ public class MusicController implements ActionListener, MouseListener  {
         this.user_playlists = requestPlaylists();
         this.homeController = homeController;
         updateTable();
-
-
     }
 
     @Override
@@ -49,8 +47,8 @@ public class MusicController implements ActionListener, MouseListener  {
         int selected_row = table.getSelectedRow();
 
         if (e.getClickCount() == 2 && selected_row != -1) {
-            int track_id = tracklist.get(selected_row).getId();
-            MusicPlayer.getInstance().setAndPlayTrack(track_id);
+            Track track = tracklist.get(selected_row);
+            MusicPlayer.getInstance().setAndPlayTrack(track);
             homeController.initializePlayer();
         }
     }
