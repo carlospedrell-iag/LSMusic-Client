@@ -9,31 +9,54 @@ import Model.Entity.Track;
 import javax.sound.sampled.*;
 import java.io.*;
 
-public class MusicPlayer extends Thread{
+public class MusicPlayer{
 
     private static final String CACHE_PATH = "./music-cache/track_id";
 
     private static MusicPlayer instance;
     private AudioInputStream ais;
     private Clip clip;
-    private volatile Boolean playing;
     private File file;
-    private int duration;
-    private int currentPosition;
-    private volatile Boolean running;
     private int track_id = -1;
     private int track_index = -1;
     private int queue_index = -1;
-    private volatile Boolean trackOver = false;
-    private volatile Boolean trackStart = false;
     private volatile String player_message = "No Music Playing";
     private Track current_track;
     private Playlist queue;
 
+    private volatile Boolean playing;
+    private volatile Boolean manualMode = false;
+
+    private LineListener lineListener;
+
+    private PlayerController playerController;
+    private PlaylistController playlistController;
+
+    public void setPlayerController(PlayerController playerController) {
+        this.playerController = playerController;
+    }
+
+    public void setPlaylistController(PlaylistController playlistController) {
+        this.playlistController = playlistController;
+    }
+
     public MusicPlayer(){
+
         playing = false;
-        running = true;
-        this.start();
+
+        this.lineListener = new LineListener() {
+            @Override
+            public void update(LineEvent event) {
+
+                if(event.getType() == LineEvent.Type.STOP && !manualMode){
+                    System.out.println("ME LLAMAN ME DICEN QUE SE HA PARADO");
+
+                        nextTrack();
+                } else {
+                    manualMode = false;
+                }
+            }
+        };
     }
 
     public static MusicPlayer getInstance() {
@@ -43,31 +66,10 @@ public class MusicPlayer extends Thread{
         return instance;
     }
 
-    @Override
-    public void run(){
-        System.out.println("running");
-        while(running){
-            while(playing){
-                currentPosition = (int)clip.getMicrosecondPosition() / 1000;
-                if(clip.getMicrosecondPosition() >= clip.getMicrosecondLength()){
-                    trackEnd();
-                }
-                if(trackStart = true){
-                    trackStart = false;
-                }
-
-            }
-
-            try{
-                sleep(100);
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-
-    }
 
     public void setTrack(Track track_request){
+        ServerConnector serverConnector = new ServerConnector();
+
         System.out.println("Downloading");
         this.player_message = "Downloading";
         this.current_track = track_request;
@@ -76,7 +78,7 @@ public class MusicPlayer extends Thread{
         //demana el track al servidor i el descarrega localment
         System.out.println("estamos en un nuevo thread");
         ObjectMessage om = new ObjectMessage(track_id,"request_file");
-        ObjectMessage input_om = ServerConnector.getInstance().sendObject(om);
+        ObjectMessage input_om = serverConnector.sendObject(om);
         Track track = (Track)input_om.getObject();
 
         if(track != null){
@@ -91,6 +93,7 @@ public class MusicPlayer extends Thread{
             try{
                 FileOutputStream fs = new FileOutputStream(path);
                 fs.write(content);
+                System.out.println("fs closed");
                 fs.close();
 
             }catch (IOException e){
@@ -105,12 +108,14 @@ public class MusicPlayer extends Thread{
                 ais = AudioSystem.getAudioInputStream(file);
 
                 clip = AudioSystem.getClip();
+
+                clip.addLineListener(playerController); //PLAYER
+                clip.addLineListener(playlistController); //PLAYlist
+                clip.addLineListener(this.lineListener);
+
                 clip.open(ais);
-                duration = (int)clip.getMicrosecondLength() / 1000;
                 clip.start();
 
-                trackOver = false;
-                trackStart = true;
                 playing = true;
 
                 System.out.println("Playing.");
@@ -124,17 +129,16 @@ public class MusicPlayer extends Thread{
 
     public void stopTrack(){
         if(playing){
-            clip.stop();
+            manualStopClip();
             playing = false;
             try{
+                System.out.println("ais closed");
                 ais.close();
             }catch (IOException e){
                 e.printStackTrace();
             }
             this.player_message = "No Music Playing";
-            trackOver = false;
         }
-
     }
 
     public void nextTrack(){
@@ -186,17 +190,10 @@ public class MusicPlayer extends Thread{
                     playTrack();
                 }
             };
-
             thread.start();
         }
     }
 
-    private void trackEnd(){
-        trackOver = true;
-        stopTrack();
-        nextTrack();
-        System.out.println("STOP");
-    }
 
     public void setQueue(Playlist queue,int queue_index, int track_index){
         System.out.println("Track index: " + track_index);
@@ -214,6 +211,15 @@ public class MusicPlayer extends Thread{
         this.track_index = -1;
     }
 
+    private void manualStopClip(){
+        this.manualMode = true;
+        System.out.println("Manual mode: " + manualMode);
+        if(manualMode){
+            clip.stop();
+        }
+
+    }
+
     private String getFileExtension(String path) {
         int lastIndexOf = path.lastIndexOf(".");
         if (lastIndexOf == -1) {
@@ -226,16 +232,12 @@ public class MusicPlayer extends Thread{
         instance = null;
     }
 
-    public Boolean isPlaying() {
-        return playing;
-    }
-
     public int getDuration() {
-        return duration;
+        return (int)clip.getMicrosecondLength() / 1000;
     }
 
     public int getCurrentPosition() {
-        return currentPosition;
+        return (int)this.clip.getMicrosecondPosition() / 1000;
     }
 
     public int getQueue_index() {
@@ -246,14 +248,6 @@ public class MusicPlayer extends Thread{
         return track_index;
     }
 
-    public Boolean isTrackOver() {
-        return trackOver;
-    }
-
-    public Boolean getTrackStart() {
-        return trackStart;
-    }
-
     public String getPlayer_message() {
         return player_message;
     }
@@ -261,4 +255,5 @@ public class MusicPlayer extends Thread{
     public Track getCurrent_track() {
         return current_track;
     }
+
 }

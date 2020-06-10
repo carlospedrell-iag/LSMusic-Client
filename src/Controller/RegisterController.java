@@ -19,16 +19,17 @@ public class RegisterController implements ActionListener {
         this.view = mainWindow.getRegisterPanel();
         this.mainWindow = mainWindow;
     }
-
+    //TODO: Un server conenctor para cada clase
     @Override
     public void actionPerformed(ActionEvent e) {
+        ServerConnector serverConnector = new ServerConnector();
         //enviem les dades de l'usuari al servidor
         User user = new User(view.getForm_name(), view.getForm_email(),view.getForm_password());
         user.setForm_password(view.getForm_confirmpassword());
 
         ObjectMessage user_om = new ObjectMessage(user,"register");
 
-        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(user_om);
+        ObjectMessage received_obj = serverConnector.sendObject(user_om);
 
         //si retorna errors els mostrem per GUI
         if(!received_obj.getErrors().isEmpty()){

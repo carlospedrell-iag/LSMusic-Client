@@ -48,8 +48,10 @@ public class MusicController implements ActionListener, MouseListener  {
 
         if (e.getClickCount() == 2 && selected_row != -1) {
             Track track = tracklist.get(selected_row);
+            MusicPlayer.getInstance().resetQueue();
             MusicPlayer.getInstance().setAndPlayTrack(track);
             homeController.initializePlayer();
+            homeController.refreshAll();
         }
     }
 
@@ -69,9 +71,11 @@ public class MusicController implements ActionListener, MouseListener  {
     }
 
     private ArrayList<Track> requestTrackList(){
+        ServerConnector serverConnector = new ServerConnector();
+
         //demanem al servidor la llista de cançons del sistema
         ObjectMessage output_obj = new ObjectMessage(null,"request_tracklist");
-        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
 
         if(received_obj.getObject() instanceof ArrayList){
             return (ArrayList<Track>)received_obj.getObject();
@@ -82,6 +86,8 @@ public class MusicController implements ActionListener, MouseListener  {
     }
 
     private void addTrackToPlaylist(){
+        ServerConnector serverConnector = new ServerConnector();
+
         this.user_playlists = requestPlaylists();
         int selected_row = musicPanel.getMusic_table().getSelectedRow();
 
@@ -107,7 +113,7 @@ public class MusicController implements ActionListener, MouseListener  {
                     PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id,rating);
 
                     ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
-                    ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+                    ObjectMessage received_obj = serverConnector.sendObject(output_obj);
 
                 }
 
@@ -119,10 +125,12 @@ public class MusicController implements ActionListener, MouseListener  {
 
 
     private ArrayList<Playlist> requestPlaylists(){
+        ServerConnector serverConnector = new ServerConnector();
+
         //demanem al servidor la llista de playlists de l'usuari
         User session_user = Session.getInstance().getUser();
         ObjectMessage output_obj = new ObjectMessage(session_user,"request_playlists");
-        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
+        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
 
         if(received_obj.getObject() instanceof ArrayList){
             return (ArrayList<Playlist>)received_obj.getObject();

@@ -16,7 +16,6 @@ public class ServerConnector {
     private int client_port;
     private String ip;
 
-    private static ServerConnector instance;
 
     public ServerConnector(){
         setConfig();
@@ -42,12 +41,6 @@ public class ServerConnector {
         return input_obj;
     }
 
-    public static ServerConnector getInstance() {
-        if(instance == null){
-            instance = new ServerConnector();
-        }
-        return instance;
-    }
 
     private void setConfig(){
         final String config_path = "./config.json";

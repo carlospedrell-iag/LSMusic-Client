@@ -5,21 +5,29 @@ import Model.MusicPlayer;
 import View.MainWindow;
 import View.PlayerPanel;
 
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PlayerController extends Thread implements ActionListener {
+public class PlayerController extends Thread implements ActionListener, LineListener {
 
     private MainWindow mainWindow;
     private PlayerPanel playerPanel;
     private volatile Boolean running = true;
 
+    private Boolean playing = false;
+
+    private final String DEFAULT_PROGRESS_LABEL = "0:00 - 0:00";
+
+
     public PlayerController(MainWindow mainWindow) {
+        MusicPlayer.getInstance().setPlayerController(this);
         this.start();
         this.mainWindow = mainWindow;
         this.playerPanel = mainWindow.getHomePanel().getPlayerPanel();
-        playerPanel.setProgress_label("0:00 - 0:00");
+        playerPanel.setProgress_label(DEFAULT_PROGRESS_LABEL);
     }
 
     @Override
@@ -27,7 +35,7 @@ public class PlayerController extends Thread implements ActionListener {
         switch (e.getActionCommand()) {
             case "stop":
                 MusicPlayer.getInstance().stopTrack();
-                playerPanel.setProgressBarValue(0);
+                playerPanel.setProgressBarValue(0); //TODO: ELIMINAR?
                 playerPanel.setProgress_label("0:00 - 0:00");
                 break;
             case "play":
@@ -48,6 +56,7 @@ public class PlayerController extends Thread implements ActionListener {
     }
 
     public void initializePlayer() {
+
         playerPanel.setProgressBarMaximum(MusicPlayer.getInstance().getDuration());
     }
 
@@ -57,6 +66,7 @@ public class PlayerController extends Thread implements ActionListener {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+
                 int currentPosition = MusicPlayer.getInstance().getCurrentPosition();
                 int duration = MusicPlayer.getInstance().getDuration() / 1000;
                 int current_seconds = currentPosition / 1000;
@@ -75,22 +85,20 @@ public class PlayerController extends Thread implements ActionListener {
     }
     //TODO:USAR SWing utilites new runnable?
 
-
     @Override
     public void run() {
         while (running) {
 
-            if (MusicPlayer.getInstance().isPlaying()) {
+            if (playing) {
                 updatePlayer();
-            } else {
-                playerPanel.setProgressBarValue(0);
             }
 
-            if (MusicPlayer.getInstance().getTrackStart()) {
+
+            /*if (MusicPlayer.getInstance().getTrackStart()) {
                 initializePlayer();
-            }
+            }*/
 
-            setPlayerLabel(MusicPlayer.getInstance().getPlayer_message());
+            setPlayerLabel();
 
             try {
                 sleep(10);
@@ -100,7 +108,8 @@ public class PlayerController extends Thread implements ActionListener {
         }
     }
 
-    public void setPlayerLabel(String message) {
+    public void setPlayerLabel() {
+        String message = MusicPlayer.getInstance().getPlayer_message();
         String final_message;
         switch (message) {
             case "Now Playing":
@@ -113,4 +122,25 @@ public class PlayerController extends Thread implements ActionListener {
         }
         playerPanel.setPlayer_label(final_message);
     }
+
+    @Override
+    public void update(LineEvent event) {
+        if(event.getType() == LineEvent.Type.START){
+            playing = true;
+            System.out.println("LINE EVVENT START FROM PLAYERCONT");
+            initializePlayer();
+
+        }
+
+        if(event.getType() == LineEvent.Type.STOP){
+            playing = false;
+
+            System.out.println("LINE EVVENT STOP FROM PLAYERCONT");
+            playerPanel.setProgressBarValue(0);
+            playerPanel.setProgress_label(DEFAULT_PROGRESS_LABEL);
+
+        }
+    }
+
+
 }

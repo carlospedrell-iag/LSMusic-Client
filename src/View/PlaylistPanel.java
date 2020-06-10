@@ -56,6 +56,24 @@ public class PlaylistPanel {
         }
     }
 
+    public void resetPlaying(int queue_index){
+        if(queue_index != -1){
+            //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
+            JScrollPane scrollPane = (JScrollPane)tabbedPane.getComponentAt(queue_index);
+            JTable table = (JTable)scrollPane.getViewport().getView();
+
+            TableModel model = table.getModel();
+            //actualitzem el simbol de playing en la taula
+            for (int i = 0; i < model.getRowCount(); i++) {
+                model.setValueAt("",i,0);
+            }
+            table.setModel(model);
+            JViewport viewport = new JViewport();
+            viewport.setView(table);
+            scrollPane.setViewport(viewport);
+        }
+    }
+
 
     public void refreshPlaylists(ArrayList<Playlist> playlists){
         tabbedPane.removeAll();
