@@ -13,6 +13,8 @@ public class User implements Serializable {
     private LocalDateTime last_access;
 
     private String form_password;
+    private int playlist_count;
+    private int track_count;
 
     public User(int id, String name, String email, String password, LocalDateTime created_at, LocalDateTime last_access){
         this.id = id;
@@ -86,5 +88,21 @@ public class User implements Serializable {
 
     public void setForm_password(String form_password) {
         this.form_password = form_password;
+    }
+
+    public int getPlaylist_count() {
+        return playlist_count;
+    }
+
+    public void setPlaylist_count(int playlist_count) {
+        this.playlist_count = playlist_count;
+    }
+
+    public int getTrack_count() {
+        return track_count;
+    }
+
+    public void setTrack_count(int track_count) {
+        this.track_count = track_count;
     }
 }

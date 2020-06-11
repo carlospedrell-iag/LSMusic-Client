@@ -17,7 +17,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         //settings principals
-        setSize(1200, 800);
+        setSize(1460, 800);
         setTitle("LaSalleMusic");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

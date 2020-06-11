@@ -44,7 +44,7 @@ public class HomePanel {
         toolBar.add(signout_button);
 
         JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.musicPanel.getMain_panel(), this.playlistPanel.getMain_panel());
-        topPanel.setDividerLocation(500);
+        topPanel.setDividerLocation(730);
 
         container.add(topPanel);
 

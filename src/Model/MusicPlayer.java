@@ -23,9 +23,12 @@ public class MusicPlayer{
     private int track_id = -1;
     private int track_index = -1;
     private int queue_index = -1;
+    private Boolean repeatTrack = false;
+    private Boolean repeatList = false;
     private volatile String player_message = "No Music Playing";
     private Track current_track;
     private Playlist queue;
+
 
     private volatile Boolean playing;
     private volatile Boolean manualMode = false;
@@ -84,10 +87,10 @@ public class MusicPlayer{
                 clip.addLineListener(this.lineListener);
 
                 clip.open(ais);
+                //FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                //volume.setValue(-80);
                 clip.start();
-
                 playing = true;
-
                 System.out.println("Playing.");
                 this.player_message = "Now Playing";
             }
@@ -111,18 +114,23 @@ public class MusicPlayer{
         }
     }
 
-    public void pauseTrack(){
-
-    }
-
     public void nextTrack(){
         if(track_index != -1){
             if(track_index < queue.getTracks().size() -1){
-                track_index++;
+                // si no esta en mode repeat, passem al seguent track en la queue
+                if(!repeatTrack){
+                    track_index++;
+                }
                 setAndPlayTrack(queue.getTracks().get(track_index));
             } else {
-                track_index = -1;
-                stopTrack();
+                //si estem en mode repetir llista, tornem al principi de la queue
+                if(repeatList){
+                    track_index = 0;
+                    setAndPlayTrack(queue.getTracks().get(track_index));
+                } else {
+                    track_index = -1;
+                    stopTrack();
+                }
             }
         }
     }
@@ -243,4 +251,11 @@ public class MusicPlayer{
         return current_track;
     }
 
+    public void setRepeatList(Boolean repeatList) {
+        this.repeatList = repeatList;
+    }
+
+    public void setRepeatTrack(Boolean repeatTrack) {
+        this.repeatTrack = repeatTrack;
+    }
 }

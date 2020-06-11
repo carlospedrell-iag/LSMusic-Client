@@ -10,8 +10,10 @@ import javax.sound.sampled.LineListener;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-public class PlayerController extends Thread implements ActionListener, LineListener {
+public class PlayerController extends Thread implements ActionListener, LineListener, ItemListener {
 
     private PlayerPanel playerPanel;
     private volatile Boolean running = true;
@@ -59,7 +61,6 @@ public class PlayerController extends Thread implements ActionListener, LineList
 
 
     public void updatePlayer() {
-
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -83,7 +84,6 @@ public class PlayerController extends Thread implements ActionListener, LineList
     @Override
     public void run() {
         while (running) {
-
             if (playing) {
                 updatePlayer();
             }
@@ -132,6 +132,21 @@ public class PlayerController extends Thread implements ActionListener, LineList
             playing = false;
             playerPanel.setProgressBarValue(0);
             playerPanel.setProgress_label(DEFAULT_PROGRESS_LABEL);
+        }
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if(playerPanel.getRepeat_list().isSelected()){
+            MusicPlayer.getInstance().setRepeatList(true);
+        } else {
+            MusicPlayer.getInstance().setRepeatList(false);
+        }
+
+        if(playerPanel.getRepeat_track().isSelected()){
+            MusicPlayer.getInstance().setRepeatTrack(true);
+        } else {
+            MusicPlayer.getInstance().setRepeatTrack(false);
         }
     }
 }

@@ -13,12 +13,13 @@ public class PlayerPanel {
     private JButton previousButton;
     private JButton nextButton;
     private JProgressBar progressBar;
-    private JCheckBox checkBox1;
-    private JCheckBox checkBox2;
     private JLabel player_label;
     private JLabel progress_label;
     private JPanel status_panel;
+    private JPanel controls;
 
+    private JToggleButton repeat_list;
+    private JToggleButton repeat_track;
     private JProgressBar downloadBar;
 
     public PlayerPanel() {
@@ -26,6 +27,8 @@ public class PlayerPanel {
         Icon playIcon = new ImageIcon("./resources/icons/play.png");
         Icon nextIcon = new ImageIcon("./resources/icons/next.png");
         Icon previousIcon = new ImageIcon("./resources/icons/previous.png");
+        Icon repeatListIcon = new ImageIcon("./resources/icons/repeat_list.png");
+        Icon repeatTrackIcon = new ImageIcon("./resources/icons/repeat_track.png");
 
         stopButton.setIcon(stopIcon);
         playButton.setIcon(playIcon);
@@ -46,6 +49,15 @@ public class PlayerPanel {
         downloadBar.setBorder(BorderFactory.createEmptyBorder(2,0,2,0));
         downloadBar.setStringPainted(true);
         downloadBar.setString("Downloading...");
+
+        repeat_list = new JToggleButton();
+        repeat_list.setIcon(repeatListIcon);
+
+        repeat_track = new JToggleButton();
+        repeat_track.setIcon(repeatTrackIcon);
+
+        controls.add(repeat_list);
+        controls.add(repeat_track);
     }
 
     public void setUpController(PlayerController controller) {
@@ -53,6 +65,8 @@ public class PlayerPanel {
         playButton.addActionListener(controller);
         nextButton.addActionListener(controller);
         previousButton.addActionListener(controller);
+        repeat_list.addItemListener(controller);
+        repeat_track.addItemListener(controller);
     }
 
     public JPanel getMain_panel() {
@@ -89,5 +103,20 @@ public class PlayerPanel {
 
     public void setProgress_label(String progress_label) {
         this.progress_label.setText(progress_label);
+    }
+
+    private void createUIComponents() {
+        GridLayout grid = new GridLayout(1,2);
+        grid.setHgap(10);
+        controls = new JPanel(grid);
+        controls.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+    }
+
+    public JToggleButton getRepeat_list() {
+        return repeat_list;
+    }
+
+    public JToggleButton getRepeat_track() {
+        return repeat_track;
     }
 }
