@@ -4,6 +4,7 @@ import Controller.RegisterController;
 import Controller.WindowController;
 import Model.Entity.User;
 import Model.MusicPlayer;
+import Model.ServerConnector;
 import View.MainWindow;
 
 import javax.swing.*;
@@ -24,7 +25,6 @@ public class Main {
 
                 mainWindow.getLoginPanel().setUpController(loginController,windowController);
                 mainWindow.getRegisterPanel().setUpController(registerController,windowController);
-
             }
         });
         //TODO: Vaciar carpeta de music cache cuando se abre

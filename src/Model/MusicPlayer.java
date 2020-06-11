@@ -2,11 +2,14 @@ package Model;
 
 import Controller.PlayerController;
 import Controller.PlaylistController;
+import Controller.WindowController;
 import Model.Entity.ObjectMessage;
 import Model.Entity.Playlist;
+import Model.Entity.Session;
 import Model.Entity.Track;
 
 import javax.sound.sampled.*;
+import javax.swing.*;
 import java.io.*;
 
 public class MusicPlayer{
@@ -31,6 +34,7 @@ public class MusicPlayer{
 
     private PlayerController playerController;
     private PlaylistController playlistController;
+    private WindowController windowController;
 
     public void setPlayerController(PlayerController playerController) {
         this.playerController = playerController;
@@ -38,6 +42,10 @@ public class MusicPlayer{
 
     public void setPlaylistController(PlaylistController playlistController) {
         this.playlistController = playlistController;
+    }
+
+    public void setWindowController(WindowController windowController){
+        this.windowController = windowController;
     }
 
     public MusicPlayer(){
@@ -66,9 +74,18 @@ public class MusicPlayer{
         return instance;
     }
 
+    private String getFileExtension(String path) {
+        int lastIndexOf = path.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return "";
+        }
+        return path.substring(lastIndexOf);
+    }
 
-    public void setTrack(Track track_request){
+
+    public void downloadTrack(Track track_request){
         ServerConnector serverConnector = new ServerConnector();
+        String path = CACHE_PATH + track_request.getId() + getFileExtension(track_request.getPath());
 
         System.out.println("Downloading");
         this.player_message = "Downloading";
@@ -76,30 +93,15 @@ public class MusicPlayer{
         //es una canço diferent
         this.track_id = track_request.getId();
         //demana el track al servidor i el descarrega localment
-        System.out.println("estamos en un nuevo thread");
-        ObjectMessage om = new ObjectMessage(track_id,"request_file");
-        ObjectMessage input_om = serverConnector.sendObject(om);
-        Track track = (Track)input_om.getObject();
 
-        if(track != null){
-            String path = CACHE_PATH + track.getId() + getFileExtension(track.getPath());
+        serverConnector.requestFile(track_request,windowController);
 
-            file = new File(path);
+        file = new File(path);
 
-            System.out.println("Arxiu rebut " + file.getName());
+        System.out.println("Arxiu rebut " + file.getName());
 
-            byte[] content = track.getFile();
 
-            try{
-                FileOutputStream fs = new FileOutputStream(path);
-                fs.write(content);
-                System.out.println("fs closed");
-                fs.close();
 
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
     }
 
     public void playTrack(){
@@ -176,6 +178,7 @@ public class MusicPlayer{
     }
 
     public void setAndPlayTrack(Track track){
+        updatePlaycount(track);
         //Si la canço ja esta descarregada la torna a posar i si no elimina la canço que s'esta reproduint i reprodueix la nova
         if(this.track_id == track.getId()){
             stopTrack();
@@ -186,7 +189,7 @@ public class MusicPlayer{
                 public void run(){
                     stopTrack();
                     deleteTrack();
-                    setTrack(track);
+                    downloadTrack(track);
                     playTrack();
                 }
             };
@@ -214,26 +217,29 @@ public class MusicPlayer{
     private void manualStopClip(){
         this.manualMode = true;
         System.out.println("Manual mode: " + manualMode);
-        if(manualMode){
-            clip.stop();
-        }
-
+        clip.stop();
     }
+    //TODO: Clase estatica Utils?
 
-    private String getFileExtension(String path) {
-        int lastIndexOf = path.lastIndexOf(".");
-        if (lastIndexOf == -1) {
-            return "";
-        }
-        return path.substring(lastIndexOf);
+    private void updatePlaycount(Track track){
+        ServerConnector serverConnector = new ServerConnector();
+
+        ObjectMessage om = new ObjectMessage(track,"update_playcount");
+        ObjectMessage input_om = serverConnector.sendObject(om);
+        Object output_obj = input_om.getObject();
+
     }
 
     public void destroy(){
         instance = null;
     }
 
-    public int getDuration() {
-        return (int)clip.getMicrosecondLength() / 1000;
+    public int getDuration() {//TODO:FAIL??
+        if(clip != null){
+            return (int)clip.getMicrosecondLength() / 1000;
+        } else {
+            return 0;
+        }
     }
 
     public int getCurrentPosition() {

@@ -91,6 +91,10 @@ public class Track implements Serializable {
         return path;
     }
 
+    public void addPlay(){
+        this.plays++;
+    }
+
     public void setPath(String path) {
         this.path = path;
     }

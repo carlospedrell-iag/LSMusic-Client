@@ -20,7 +20,7 @@ public class PlaylistPanel {
     private JMenuItem deleteTrack;
     private JPopupMenu popupMenu;
 
-    private String[] columnNames = {"Playing","Title", "Artist", "Album", "Genre", "Plays", "Your Rating"};
+    private String[] columnNames = {"Playing","Title", "Artist", "Album", "Genre", "Your Rating"};
 
 
     public PlaylistPanel(){
@@ -107,7 +107,6 @@ public class PlaylistPanel {
                         track.getArtist(),
                         track.getAlbum(),
                         track.getGenre(),
-                        track.getPlays(),
                         rating
                 });
 

@@ -14,6 +14,7 @@ public class MainWindow extends JFrame {
     private RegisterPanel registerPanel;
     private HomePanel homePanel;
 
+
     public MainWindow() {
         //settings principals
         setSize(1200, 800);
@@ -27,6 +28,7 @@ public class MainWindow extends JFrame {
         registerPanel = new RegisterPanel();
         //el primer panel per default es el de login
         setContentPane(loginPanel.getMain_panel());
+
     }
 
     public void switchPanel(String panel_name) {
