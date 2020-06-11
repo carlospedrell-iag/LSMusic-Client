@@ -22,8 +22,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
 
     private ArrayList<Playlist> user_playlists;
 
-    private volatile Boolean running = true;
-
     public PlaylistController(MainWindow mainWindow, HomeController homeController) {
         MusicPlayer.getInstance().setPlaylistController(this);
 
@@ -34,27 +32,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
 
         updatePlaylists();
     }
-
-    /*
-    @Override
-    public void run() {
-        while (running) {
-
-            if (MusicPlayer.getInstance().isTrackOver()) {
-                playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
-            }
-
-            if (MusicPlayer.getInstance().getTrackStart()) {
-                playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
-            }
-
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     @Override
     public void update(LineEvent event) {
@@ -163,11 +140,10 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private ArrayList<Playlist> requestPlaylists() {
-        ServerConnector serverConnector = new ServerConnector();
         //demanem al servidor la llista de playlists de l'usuari
         User session_user = Session.getInstance().getUser();
         ObjectMessage output_obj = new ObjectMessage(session_user, "request_playlists");
-        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         if (received_obj.getObject() instanceof ArrayList) {
             return (ArrayList<Playlist>) received_obj.getObject();
@@ -178,13 +154,12 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private void newPlaylist(String name) {
-        ServerConnector serverConnector = new ServerConnector();
         //Creem una nova playlist i l'enviem al servidor per emmagatzemar
         int user_id = Session.getInstance().getUser().getId();
         Playlist playlist = new Playlist(name, user_id);
 
         ObjectMessage output_obj = new ObjectMessage(playlist, "new_playlist");
-        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         //si retorna errors els mostrem per GUI
         if (!received_obj.getErrors().isEmpty()) {
@@ -193,8 +168,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private void deletePlaylist() {
-        ServerConnector serverConnector = new ServerConnector();
-
         if (!user_playlists.isEmpty()) {
             ArrayList<String> options = new ArrayList<>();
 
@@ -209,7 +182,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
                 Playlist playlist = user_playlists.get(selected_id);
 
                 ObjectMessage output_obj = new ObjectMessage(playlist, "delete_playlist");
-                ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+                ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
             }
 
             //comprovem si la playlist a eliminar es la cua de reproduccio
@@ -220,7 +193,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private void rateTrack() {
-        ServerConnector serverConnector = new ServerConnector();
 
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
         int track_index = getSelectedTrackIndex();
@@ -234,7 +206,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
                 PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id, track_id, rating);
 
                 ObjectMessage output_obj = new ObjectMessage(playlistTrack, "rate_track");
-                ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+                ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
             }
         } else {
             mainWindow.showError("No s'ha seleccionat cap track.");
@@ -242,8 +214,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private void deleteTrack() {
-        ServerConnector serverConnector = new ServerConnector();
-
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
         int track_index = getSelectedTrackIndex();
 
@@ -257,7 +227,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
             playlistTrack.setId(track.getPlaylist_track_id());
 
             ObjectMessage output_obj = new ObjectMessage(playlistTrack, "delete_playlist_track");
-            ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+            ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         } else {
             mainWindow.showError("No s'ha seleccionat cap track.");

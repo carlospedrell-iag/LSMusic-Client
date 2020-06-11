@@ -48,10 +48,10 @@ public class MusicController implements ActionListener, MouseListener  {
 
         if (e.getClickCount() == 2 && selected_row != -1) {
             Track track = tracklist.get(selected_row);
+            homeController.initializePlayer();
             MusicPlayer.getInstance().resetQueue();
             MusicPlayer.getInstance().setAndPlayTrack(track);
-            homeController.initializePlayer();
-            //homeController.refreshAll();
+            homeController.refreshPlaylists();
         }
     }
 
@@ -71,11 +71,9 @@ public class MusicController implements ActionListener, MouseListener  {
     }
 
     private ArrayList<Track> requestTrackList(){
-        ServerConnector serverConnector = new ServerConnector();
-
         //demanem al servidor la llista de cançons del sistema
         ObjectMessage output_obj = new ObjectMessage(null,"request_tracklist");
-        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         if(received_obj.getObject() instanceof ArrayList){
             return (ArrayList<Track>)received_obj.getObject();
@@ -86,8 +84,6 @@ public class MusicController implements ActionListener, MouseListener  {
     }
 
     private void addTrackToPlaylist(){
-        ServerConnector serverConnector = new ServerConnector();
-
         this.user_playlists = requestPlaylists();
         int selected_row = musicPanel.getMusic_table().getSelectedRow();
 
@@ -113,8 +109,7 @@ public class MusicController implements ActionListener, MouseListener  {
                     PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id,rating);
 
                     ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
-                    ObjectMessage received_obj = serverConnector.sendObject(output_obj);
-
+                    ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
                 }
 
             } else {
@@ -125,12 +120,10 @@ public class MusicController implements ActionListener, MouseListener  {
 
 
     private ArrayList<Playlist> requestPlaylists(){
-        ServerConnector serverConnector = new ServerConnector();
-
         //demanem al servidor la llista de playlists de l'usuari
         User session_user = Session.getInstance().getUser();
         ObjectMessage output_obj = new ObjectMessage(session_user,"request_playlists");
-        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         if(received_obj.getObject() instanceof ArrayList){
             return (ArrayList<Playlist>)received_obj.getObject();
@@ -143,7 +136,6 @@ public class MusicController implements ActionListener, MouseListener  {
     private float getTrackRating(int track_id) {
         //ens retorna el rating del track a nivell local (del usuari logejat)
         //aixo ho aconseguim rastrejant les playlists cercant si el track es troba en alguna
-
         float rating = -1;
 
         for (Playlist p : user_playlists) {

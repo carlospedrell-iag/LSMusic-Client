@@ -34,32 +34,17 @@ public class MusicPlayer{
 
     private PlayerController playerController;
     private PlaylistController playlistController;
-    private WindowController windowController;
 
-    public void setPlayerController(PlayerController playerController) {
-        this.playerController = playerController;
-    }
-
-    public void setPlaylistController(PlaylistController playlistController) {
-        this.playlistController = playlistController;
-    }
-
-    public void setWindowController(WindowController windowController){
-        this.windowController = windowController;
-    }
 
     public MusicPlayer(){
-
         playing = false;
 
         this.lineListener = new LineListener() {
             @Override
             public void update(LineEvent event) {
-
+                //listener que s'activa quan el track finalitza pero nomes automaticament
                 if(event.getType() == LineEvent.Type.STOP && !manualMode){
-                    System.out.println("ME LLAMAN ME DICEN QUE SE HA PARADO");
-
-                        nextTrack();
+                    nextTrack();
                 } else {
                     manualMode = false;
                 }
@@ -74,17 +59,7 @@ public class MusicPlayer{
         return instance;
     }
 
-    private String getFileExtension(String path) {
-        int lastIndexOf = path.lastIndexOf(".");
-        if (lastIndexOf == -1) {
-            return "";
-        }
-        return path.substring(lastIndexOf);
-    }
-
-
     public void downloadTrack(Track track_request){
-        ServerConnector serverConnector = new ServerConnector();
         String path = CACHE_PATH + track_request.getId() + getFileExtension(track_request.getPath());
 
         System.out.println("Downloading");
@@ -93,15 +68,9 @@ public class MusicPlayer{
         //es una canço diferent
         this.track_id = track_request.getId();
         //demana el track al servidor i el descarrega localment
-
-        serverConnector.requestFile(track_request,windowController);
-
+        ServerConnector.getInstance().requestFile(track_request);
         file = new File(path);
-
         System.out.println("Arxiu rebut " + file.getName());
-
-
-
     }
 
     public void playTrack(){
@@ -110,7 +79,6 @@ public class MusicPlayer{
                 ais = AudioSystem.getAudioInputStream(file);
 
                 clip = AudioSystem.getClip();
-
                 clip.addLineListener(playerController); //PLAYER
                 clip.addLineListener(playlistController); //PLAYlist
                 clip.addLineListener(this.lineListener);
@@ -141,6 +109,10 @@ public class MusicPlayer{
             }
             this.player_message = "No Music Playing";
         }
+    }
+
+    public void pauseTrack(){
+
     }
 
     public void nextTrack(){
@@ -197,7 +169,6 @@ public class MusicPlayer{
         }
     }
 
-
     public void setQueue(Playlist queue,int queue_index, int track_index){
         System.out.println("Track index: " + track_index);
         this.queue = queue;
@@ -219,22 +190,32 @@ public class MusicPlayer{
         System.out.println("Manual mode: " + manualMode);
         clip.stop();
     }
-    //TODO: Clase estatica Utils?
 
     private void updatePlaycount(Track track){
-        ServerConnector serverConnector = new ServerConnector();
-
         ObjectMessage om = new ObjectMessage(track,"update_playcount");
-        ObjectMessage input_om = serverConnector.sendObject(om);
+        ObjectMessage input_om = ServerConnector.getInstance().sendObject(om);
         Object output_obj = input_om.getObject();
-
     }
+
+    private String getFileExtension(String path) {
+        int lastIndexOf = path.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return "";
+        }
+        return path.substring(lastIndexOf);
+    }
+
+    public void setPlayerController(PlayerController playerController) {
+        this.playerController = playerController;
+    }
+
+    public void setPlaylistController(PlaylistController playlistController) { this.playlistController = playlistController; }
 
     public void destroy(){
         instance = null;
     }
 
-    public int getDuration() {//TODO:FAIL??
+    public int getDuration() {
         if(clip != null){
             return (int)clip.getMicrosecondLength() / 1000;
         } else {

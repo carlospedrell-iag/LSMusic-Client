@@ -1,8 +1,10 @@
 package View;
 
 import Controller.PlayerController;
+import Model.ServerConnector;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class PlayerPanel {
     private JPanel main_panel;
@@ -15,6 +17,9 @@ public class PlayerPanel {
     private JCheckBox checkBox2;
     private JLabel player_label;
     private JLabel progress_label;
+    private JPanel status_panel;
+
+    private JProgressBar downloadBar;
 
     public PlayerPanel() {
         Icon stopIcon = new ImageIcon("./resources/icons/stop.png");
@@ -31,6 +36,16 @@ public class PlayerPanel {
         playButton.setActionCommand("play");
         nextButton.setActionCommand("next");
         previousButton.setActionCommand("previous");
+
+        status_panel.setLayout( new GridLayout(1,1));
+        player_label = new JLabel();
+        player_label.setText("DEFAULT");
+        status_panel.add(player_label);
+
+        downloadBar = new JProgressBar();
+        downloadBar.setBorder(BorderFactory.createEmptyBorder(2,0,2,0));
+        downloadBar.setStringPainted(true);
+        downloadBar.setString("Downloading...");
     }
 
     public void setUpController(PlayerController controller) {
@@ -54,6 +69,22 @@ public class PlayerPanel {
 
     public void setPlayer_label(String player_label) {
         this.player_label.setText(player_label);
+    }
+
+    public void showDownloadBar(){
+        if(this.status_panel.getComponent(0) instanceof JLabel){
+            this.status_panel.remove(0);
+            this.status_panel.add(downloadBar);
+        }
+        downloadBar.setMaximum(ServerConnector.getInstance().getFile_length());
+        downloadBar.setValue(ServerConnector.getInstance().getProgress());
+    }
+
+    public void showPlayerLabel(){
+        if(this.status_panel.getComponent(0) instanceof JProgressBar){
+            this.status_panel.remove(0);
+            this.status_panel.add(player_label);
+        }
     }
 
     public void setProgress_label(String progress_label) {

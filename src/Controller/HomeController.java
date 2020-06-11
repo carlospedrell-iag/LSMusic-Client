@@ -35,7 +35,6 @@ public class HomeController implements ActionListener{
 
     }
     //TODO: PAUSE BUTTON
-    //TODO: MUSIC PLAY COUNT
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -45,21 +44,22 @@ public class HomeController implements ActionListener{
                 break;
             case "sign_out":
                 int dialogResult = mainWindow.showConfirmMessage("Vols Sortir?");
-
                 if(dialogResult == JOptionPane.YES_OPTION){
                     mainWindow.switchPanel("login");
                 }
-
                 MusicPlayer.getInstance().stopTrack();
                 MusicPlayer.getInstance().deleteTrack();
                 MusicPlayer.getInstance().destroy();
-
                 break;
         }
     }
 
     public void refreshAll(){
         musicController.updateTable();
+        playlistController.updatePlaylists();
+    }
+
+    public void refreshPlaylists(){
         playlistController.updatePlaylists();
     }
 

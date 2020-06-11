@@ -27,7 +27,6 @@ public class Main {
                 mainWindow.getRegisterPanel().setUpController(registerController,windowController);
             }
         });
-        //TODO: Vaciar carpeta de music cache cuando se abre
 
         //codi a executar quan es tanca l'aplicació
         Runtime.getRuntime().addShutdownHook(new Thread() {

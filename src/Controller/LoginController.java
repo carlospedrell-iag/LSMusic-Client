@@ -27,9 +27,7 @@ public class LoginController implements ActionListener {
 
         ObjectMessage output_obj = new ObjectMessage(user,"login");
 
-        ServerConnector serverConnector = new ServerConnector();
-
-        ObjectMessage received_obj = serverConnector.sendObject(output_obj);
+        ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         //si retorna errors els mostrem per GUI
         if(!received_obj.getErrors().isEmpty()){

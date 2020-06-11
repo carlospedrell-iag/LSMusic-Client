@@ -82,7 +82,6 @@ public class MainWindow extends JFrame {
                 "★★★★★",
         };
         String s = (String) JOptionPane.showInputDialog(null, message, title, JOptionPane.PLAIN_MESSAGE, null, stars, stars[0]);
-        //TODO: alguna opcion parece fallar NullPointerException
         return s.length();
     }
 
@@ -97,5 +96,14 @@ public class MainWindow extends JFrame {
     public HomePanel getHomePanel() {
         return homePanel;
     }
+
+    public void disableWindow(){
+        this.setEnabled(false);
+    }
+
+    public void enableWindow(){
+        this.setEnabled(true);
+    }
+
 
 }

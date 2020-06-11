@@ -13,19 +13,19 @@ import java.awt.event.ActionListener;
 
 public class PlayerController extends Thread implements ActionListener, LineListener {
 
-    private MainWindow mainWindow;
     private PlayerPanel playerPanel;
     private volatile Boolean running = true;
 
     private Boolean playing = false;
 
+    private MainWindow mainWindow;
     private final String DEFAULT_PROGRESS_LABEL = "0:00 - 0:00";
 
 
     public PlayerController(MainWindow mainWindow) {
         MusicPlayer.getInstance().setPlayerController(this);
-        this.start();
         this.mainWindow = mainWindow;
+        this.start();
         this.playerPanel = mainWindow.getHomePanel().getPlayerPanel();
         playerPanel.setProgress_label(DEFAULT_PROGRESS_LABEL);
     }
@@ -35,8 +35,6 @@ public class PlayerController extends Thread implements ActionListener, LineList
         switch (e.getActionCommand()) {
             case "stop":
                 MusicPlayer.getInstance().stopTrack();
-                playerPanel.setProgressBarValue(0); //TODO: ELIMINAR?
-                playerPanel.setProgress_label("0:00 - 0:00");
                 break;
             case "play":
                 MusicPlayer.getInstance().playTrack();
@@ -56,7 +54,6 @@ public class PlayerController extends Thread implements ActionListener, LineList
     }
 
     public void initializePlayer() {
-
         playerPanel.setProgressBarMaximum(MusicPlayer.getInstance().getDuration());
     }
 
@@ -75,7 +72,6 @@ public class PlayerController extends Thread implements ActionListener, LineList
                 playerPanel.setProgress_label(formatTime(current_seconds) + " - " + formatTime(duration));
             }
         });
-
     }
 
     private String formatTime(int s) {
@@ -83,7 +79,6 @@ public class PlayerController extends Thread implements ActionListener, LineList
         int seconds = s % 60;
         return String.format("%d:%02d", minutes, seconds);
     }
-    //TODO:USAR SWing utilites new runnable?
 
     @Override
     public void run() {
@@ -93,12 +88,7 @@ public class PlayerController extends Thread implements ActionListener, LineList
                 updatePlayer();
             }
 
-
-            /*if (MusicPlayer.getInstance().getTrackStart()) {
-                initializePlayer();
-            }*/
-
-            setPlayerLabel();
+            setPlayerPanel();
 
             try {
                 sleep(10);
@@ -108,13 +98,21 @@ public class PlayerController extends Thread implements ActionListener, LineList
         }
     }
 
-    public void setPlayerLabel() {
+    public void setPlayerPanel() {
         String message = MusicPlayer.getInstance().getPlayer_message();
-        String final_message;
+        String final_message = "";
+
+        playerPanel.showPlayerLabel();
+        mainWindow.enableWindow();
+
         switch (message) {
             case "Now Playing":
                 Track track = MusicPlayer.getInstance().getCurrent_track();
                 final_message = message + "  . . .  " + track.getTitle();
+                break;
+            case "Downloading":
+                mainWindow.disableWindow();
+                playerPanel.showDownloadBar();
                 break;
             default:
                 final_message = message + "    . . . . . . . . . . . . ";
@@ -127,20 +125,13 @@ public class PlayerController extends Thread implements ActionListener, LineList
     public void update(LineEvent event) {
         if(event.getType() == LineEvent.Type.START){
             playing = true;
-            System.out.println("LINE EVVENT START FROM PLAYERCONT");
             initializePlayer();
-
         }
 
         if(event.getType() == LineEvent.Type.STOP){
             playing = false;
-
-            System.out.println("LINE EVVENT STOP FROM PLAYERCONT");
             playerPanel.setProgressBarValue(0);
             playerPanel.setProgress_label(DEFAULT_PROGRESS_LABEL);
-
         }
     }
-
-
 }

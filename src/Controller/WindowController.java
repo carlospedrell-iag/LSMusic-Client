@@ -11,8 +11,6 @@ public class WindowController implements ActionListener {
     private MainWindow mainWindow;
 
     public WindowController(MainWindow mainWindow){
-        MusicPlayer.getInstance().setWindowController(this);
-
         this.mainWindow = mainWindow;
     }
 
