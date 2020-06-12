@@ -20,22 +20,20 @@ public class MainWindow extends JFrame {
     private RegisterPanel registerPanel;
     private HomePanel homePanel;
 
-
     public MainWindow() {
-        //settings principals
         //instala el flat theme per Swing
-        FlatLightLaf.install();
-
+        FlatDarkLaf.install();
         try{
             UIManager.setLookAndFeel(new FlatDarkLaf());
         }catch (Exception e){
             e.printStackTrace();
         }
-
         //customization
         UIManager.put( "SplitPaneDivider.oneTouchHoverArrowColor", new Color(0x009EFF));
-
-
+        UIManager.put( "ScrollBar.thumbArc", 999 );
+        UIManager.put( "ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ) );
+        UIManager.put("ToggleButton.selectedBackground", new Color(75, 135, 178));
+        //settings principals
         setSize(1460, 800);
         setTitle("LaSalleMusic");
         setLocationRelativeTo(null);
@@ -50,7 +48,6 @@ public class MainWindow extends JFrame {
 
         //el primer panel per default es el de login
         setContentPane(loginPanel.getMain_panel());
-
     }
 
     public void switchPanel(String panel_name) {

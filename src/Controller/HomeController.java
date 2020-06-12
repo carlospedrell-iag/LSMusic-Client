@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Entity.User;
 import Model.MusicPlayer;
 import View.HomePanel;
 import View.MainWindow;
@@ -10,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class HomeController implements ActionListener{
@@ -29,12 +31,12 @@ public class HomeController implements ActionListener{
         this.musicController = new MusicController(mainWindow,this);
         this.playlistController = new PlaylistController(mainWindow,this);
         this.playerController = new PlayerController(mainWindow);
-        this.userController = new UserController(mainWindow);
+        this.userController = new UserController(mainWindow,this);
 
         homePanel.getMusicPanel().setUpController(this.musicController);
         homePanel.getPlaylistPanel().setUpController(this.playlistController);
         homePanel.getPlayerPanel().setUpController(this.playerController);
-
+        homePanel.getUserPanel().setUpController(this.userController);
     }
     //TODO: PAUSE BUTTON
 
@@ -69,5 +71,13 @@ public class HomeController implements ActionListener{
         playerController.initializePlayer();
     }
 
+    public void setPlaylistUser(String user_name){
+        MusicPlayer.getInstance().resetQueue();
+        playlistController.setFollowedUser(user_name);
+        playlistController.setShowFollowedPlaylists(true);
+    }
 
+    public ArrayList<User> getFollowedUsers(){
+        return userController.getFollowedUsers();
+    }
 }

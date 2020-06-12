@@ -1,5 +1,6 @@
 package View;
 
+import Controller.UserController;
 import Model.Entity.User;
 
 import javax.swing.*;
@@ -10,7 +11,8 @@ import java.util.ArrayList;
 public class UserPanel extends JPanel {
     private JPanel main_panel;
     private JTable user_table;
-    private final int WIDTH = 100;
+    private JButton follow_button;
+    private final int WIDTH = 120;
 
     private String[] columnNames = {"Username"};
 
@@ -22,6 +24,9 @@ public class UserPanel extends JPanel {
         main_panel.setPreferredSize(new Dimension(WIDTH,-1));
         main_panel.setMinimumSize(new Dimension(WIDTH,-1));
         main_panel.setMaximumSize(new Dimension(WIDTH,-1));
+
+        Icon addIcon = new ImageIcon("./resources/icons/add.png");
+        follow_button.setIcon(addIcon);
 
     }
 
@@ -43,8 +48,15 @@ public class UserPanel extends JPanel {
         user_table.setModel(model);
     }
 
+    public void setUpController(UserController controller){
+        user_table.addMouseListener(controller);
+    }
+
     public JPanel getMain_panel() {
         return main_panel;
     }
 
+    public JTable getUser_table() {
+        return user_table;
+    }
 }

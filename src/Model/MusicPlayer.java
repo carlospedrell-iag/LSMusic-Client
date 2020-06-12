@@ -115,22 +115,28 @@ public class MusicPlayer{
     }
 
     public void nextTrack(){
+        int nTracks = queue.getTracks().size();
         if(track_index != -1){
-            if(track_index < queue.getTracks().size() -1){
-                // si no esta en mode repeat, passem al seguent track en la queue
-                if(!repeatTrack){
+            //si no es l'ultim track de la queue
+            if(track_index < nTracks - 1){
+                if(!repeatTrack ){
                     track_index++;
                 }
+            } else {
+                // si es l'ultim
+                if(!repeatTrack ) {
+                    track_index = -1;
+
+                    if (repeatList) {
+                        track_index = 0;
+                    }
+                }
+            }
+
+            if(track_index != -1){
                 setAndPlayTrack(queue.getTracks().get(track_index));
             } else {
-                //si estem en mode repetir llista, tornem al principi de la queue
-                if(repeatList){
-                    track_index = 0;
-                    setAndPlayTrack(queue.getTracks().get(track_index));
-                } else {
-                    track_index = -1;
-                    stopTrack();
-                }
+                stopTrack();
             }
         }
     }

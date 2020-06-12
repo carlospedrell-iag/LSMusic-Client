@@ -21,6 +21,8 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     private HomeController homeController;
 
     private ArrayList<Playlist> user_playlists;
+    private Boolean showFollowedPlaylists = false; //si es true, sortiren les playlists de l'usuari amic demanat
+    private User followedUser;
 
     public PlaylistController(MainWindow mainWindow, HomeController homeController) {
         MusicPlayer.getInstance().setPlaylistController(this);
@@ -75,6 +77,9 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
                 break;
             case "delete_track":
                 deleteTrack();
+                homeController.refreshAll();
+            case "back":
+                setShowFollowedPlaylists(false);
                 homeController.refreshAll();
         }
     }
@@ -141,8 +146,15 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
 
     private ArrayList<Playlist> requestPlaylists() {
         //demanem al servidor la llista de playlists de l'usuari
-        User session_user = Session.getInstance().getUser();
-        ObjectMessage output_obj = new ObjectMessage(session_user, "request_playlists");
+        User playlist_user;
+        if(showFollowedPlaylists){
+            playlist_user = this.followedUser;
+            System.out.println("Showing playlists of: " + playlist_user.getName());
+        } else {
+            playlist_user = Session.getInstance().getUser();
+        }
+
+        ObjectMessage output_obj = new ObjectMessage(playlist_user, "request_playlists");
         ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
         if (received_obj.getObject() instanceof ArrayList) {
@@ -267,6 +279,34 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
             }
         }
         return exists;
+    }
+
+    public void setFollowedUser(String user_name) {
+        ArrayList<User> followedUsers = homeController.getFollowedUsers();
+        User user = null;
+
+        for(User u: followedUsers){
+            if(u.getName().equals(user_name)){
+                user = u;
+            }
+        }
+        if(user == null){
+            System.out.println("Usuari no trobat");
+        }
+
+        this.followedUser = user;
+        playlistPanel.setUser_name(user.getName());
+    }
+
+    public void setShowFollowedPlaylists(Boolean showFollowedPlaylists) {
+        this.showFollowedPlaylists = showFollowedPlaylists;
+
+        if(showFollowedPlaylists){
+            playlistPanel.setFollowedPlaylistMode();
+        } else {
+            playlistPanel.setUserMode();
+        }
+
     }
 
     @Override

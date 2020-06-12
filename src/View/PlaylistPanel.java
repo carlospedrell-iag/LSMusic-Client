@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class PlaylistPanel {
@@ -16,11 +17,17 @@ public class PlaylistPanel {
     private JPanel main_panel;
     private JButton newPlaylist_button;
     private JButton deletePlaylist_button;
+    private JButton back_button;
+    private JPanel backButtonPanel;
+    private JPanel buttonPanel;
     private JMenuItem rateTrack;
     private JMenuItem deleteTrack;
     private JPopupMenu popupMenu;
 
     private String[] columnNames = {"Playing","Title", "Artist", "Album", "Genre", "Your Rating"};
+
+    private String user_name = "";
+    private LayoutManager defaultLayout;
 
 
     public PlaylistPanel(){
@@ -35,6 +42,11 @@ public class PlaylistPanel {
         deleteTrack.setActionCommand("delete_track");
         popupMenu.add(rateTrack);
         popupMenu.add(deleteTrack);
+
+        back_button = new JButton("Back");
+        back_button.setActionCommand("back");
+
+        defaultLayout = backButtonPanel.getLayout();
 
     }
 
@@ -74,14 +86,11 @@ public class PlaylistPanel {
         }
     }
 
-
     public void refreshPlaylists(ArrayList<Playlist> playlists){
         tabbedPane.removeAll();
 
         int playlist_index = 0;
         for (Playlist playlist : playlists) {
-
-
             JTable table = new JTable();
             DefaultTableModel model = new DefaultTableModel() {
                 @Override
@@ -142,6 +151,43 @@ public class PlaylistPanel {
         deletePlaylist_button.addActionListener(controller);
         rateTrack.addActionListener(controller);
         deleteTrack.addActionListener(controller);
+        back_button.addActionListener(controller);
+    }
+
+    public void setFollowedPlaylistMode(){
+        String title;
+        //adapta el titol segons el nom acaba en s o no (Perque no surtin coses com Carlos's Playlists)
+        if(user_name.substring(user_name.length() -1).equals("s")){
+            title = "   " +user_name + "' Playlists";
+        } else {
+            title = "   " +user_name + "'s Playlists";
+        }
+
+        JLabel title_label = new JLabel(title);
+        Font font = title_label.getFont();
+        title_label.setFont(new Font(font.getName(),Font.PLAIN,16));
+
+
+        buttonPanel.removeAll();
+        backButtonPanel.removeAll();
+        backButtonPanel.setLayout(new BorderLayout());
+        backButtonPanel.add(back_button,BorderLayout.WEST);
+        backButtonPanel.add(title_label);
+    }
+
+    public void setUserMode(){
+        backButtonPanel.removeAll();
+        JLabel title_label = new JLabel("Your Playlists");
+        Font font = title_label.getFont();
+        title_label.setFont(new Font(font.getName(),Font.PLAIN,16));
+
+        backButtonPanel.add(title_label);
+        GridLayout grid = new GridLayout(1,2);
+        grid.setHgap(5);
+        buttonPanel.setLayout(grid);
+
+        buttonPanel.add(newPlaylist_button);
+        buttonPanel.add(deletePlaylist_button);
     }
 
     public JPanel getMain_panel() {
@@ -162,5 +208,13 @@ public class PlaylistPanel {
         } else {
             return "";
         }
+    }
+
+    private void createUIComponents() {
+        backButtonPanel = new JPanel(new GridLayout(1,1));
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 }

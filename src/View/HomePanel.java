@@ -48,7 +48,8 @@ public class HomePanel {
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerSize(10);
         splitPane.setBackground(new Color(44,47,49));
-        splitPane.setDividerLocation(730);
+        splitPane.setDividerLocation(.5d);
+        splitPane.setResizeWeight(.5d);
 
         JPanel musicContainer = new JPanel(new BorderLayout());
         musicContainer.add(splitPane);
