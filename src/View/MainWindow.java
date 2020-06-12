@@ -4,9 +4,15 @@ import Controller.HomeController;
 import Controller.MusicController;
 import Controller.PlayerController;
 import Controller.PlaylistController;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MainWindow extends JFrame {
 
@@ -17,15 +23,31 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         //settings principals
+        //instala el flat theme per Swing
+        FlatLightLaf.install();
+
+        try{
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //customization
+        UIManager.put( "SplitPaneDivider.oneTouchHoverArrowColor", new Color(0x009EFF));
+
+
         setSize(1460, 800);
         setTitle("LaSalleMusic");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setMinimumSize(new Dimension(880, 500));
+        ImageIcon icon = new ImageIcon("./resources/icons/icon.png");
+        this.setIconImage(icon.getImage());
         //initzialitzem tots els panels
         loginPanel = new LoginPanel();
         registerPanel = new RegisterPanel();
+
         //el primer panel per default es el de login
         setContentPane(loginPanel.getMain_panel());
 
@@ -104,6 +126,5 @@ public class MainWindow extends JFrame {
     public void enableWindow(){
         this.setEnabled(true);
     }
-
 
 }

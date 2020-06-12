@@ -40,11 +40,6 @@ public class PlayerPanel {
         nextButton.setActionCommand("next");
         previousButton.setActionCommand("previous");
 
-        status_panel.setLayout( new GridLayout(1,1));
-        player_label = new JLabel();
-        player_label.setText("DEFAULT");
-        status_panel.add(player_label);
-
         downloadBar = new JProgressBar();
         downloadBar.setBorder(BorderFactory.createEmptyBorder(2,0,2,0));
         downloadBar.setStringPainted(true);
@@ -58,6 +53,11 @@ public class PlayerPanel {
 
         controls.add(repeat_list);
         controls.add(repeat_track);
+
+        status_panel.setLayout( new GridLayout(1,1));
+        player_label = new JLabel();
+        player_label.setText("DEFAULT");
+        status_panel.add(player_label);
     }
 
     public void setUpController(PlayerController controller) {
@@ -86,10 +86,14 @@ public class PlayerPanel {
     }
 
     public void showDownloadBar(){
+        Component compo = this.status_panel.getComponent(0);
         if(this.status_panel.getComponent(0) instanceof JLabel){
-            this.status_panel.remove(0);
+            this.status_panel.removeAll();
             this.status_panel.add(downloadBar);
         }
+    }
+
+    public void updateDownloadBar(){
         downloadBar.setMaximum(ServerConnector.getInstance().getFile_length());
         downloadBar.setValue(ServerConnector.getInstance().getProgress());
     }
@@ -109,7 +113,7 @@ public class PlayerPanel {
         GridLayout grid = new GridLayout(1,2);
         grid.setHgap(10);
         controls = new JPanel(grid);
-        controls.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        controls.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     }
 
     public JToggleButton getRepeat_list() {

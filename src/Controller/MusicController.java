@@ -51,6 +51,7 @@ public class MusicController implements ActionListener, MouseListener  {
             homeController.initializePlayer();
             MusicPlayer.getInstance().resetQueue();
             MusicPlayer.getInstance().setAndPlayTrack(track);
+
             homeController.refreshPlaylists();
         }
     }

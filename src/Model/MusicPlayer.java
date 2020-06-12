@@ -25,7 +25,7 @@ public class MusicPlayer{
     private int queue_index = -1;
     private Boolean repeatTrack = false;
     private Boolean repeatList = false;
-    private volatile String player_message = "No Music Playing";
+    private String player_message = "No Music Playing";
     private Track current_track;
     private Playlist queue;
 
@@ -61,7 +61,7 @@ public class MusicPlayer{
         }
         return instance;
     }
-
+    //TODO: repeatrack no funciona en el ultimo de la lista
     public void downloadTrack(Track track_request){
         String path = CACHE_PATH + track_request.getId() + getFileExtension(track_request.getPath());
 
@@ -232,7 +232,11 @@ public class MusicPlayer{
     }
 
     public int getCurrentPosition() {
-        return (int)this.clip.getMicrosecondPosition() / 1000;
+        if(clip != null){
+            return (int)this.clip.getMicrosecondPosition() / 1000;
+        } else {
+            return 0;
+        }
     }
 
     public int getQueue_index() {

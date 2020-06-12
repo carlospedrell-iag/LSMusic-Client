@@ -20,6 +20,7 @@ public class HomeController implements ActionListener{
     private MusicController musicController;
     private PlaylistController playlistController;
     private PlayerController playerController;
+    private UserController userController;
 
     public HomeController(MainWindow mainWindow){
         this.mainWindow = mainWindow;
@@ -28,6 +29,7 @@ public class HomeController implements ActionListener{
         this.musicController = new MusicController(mainWindow,this);
         this.playlistController = new PlaylistController(mainWindow,this);
         this.playerController = new PlayerController(mainWindow);
+        this.userController = new UserController(mainWindow);
 
         homePanel.getMusicPanel().setUpController(this.musicController);
         homePanel.getPlaylistPanel().setUpController(this.playlistController);

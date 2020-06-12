@@ -27,9 +27,11 @@ public class PlayerController extends Thread implements ActionListener, LineList
     public PlayerController(MainWindow mainWindow) {
         MusicPlayer.getInstance().setPlayerController(this);
         this.mainWindow = mainWindow;
-        this.start();
+
         this.playerPanel = mainWindow.getHomePanel().getPlayerPanel();
         playerPanel.setProgress_label(DEFAULT_PROGRESS_LABEL);
+
+        this.start();
     }
 
     @Override
@@ -61,18 +63,19 @@ public class PlayerController extends Thread implements ActionListener, LineList
 
 
     public void updatePlayer() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
 
-                int currentPosition = MusicPlayer.getInstance().getCurrentPosition();
-                int duration = MusicPlayer.getInstance().getDuration() / 1000;
-                int current_seconds = currentPosition / 1000;
 
-                playerPanel.setProgressBarValue(currentPosition);
-                playerPanel.setProgress_label(formatTime(current_seconds) + " - " + formatTime(duration));
-            }
-        });
+        if(playing){
+            int currentPosition = MusicPlayer.getInstance().getCurrentPosition();
+            int duration = MusicPlayer.getInstance().getDuration() / 1000;
+            int current_seconds = currentPosition / 1000;
+
+            playerPanel.setProgressBarValue(currentPosition);
+            playerPanel.setProgress_label(formatTime(current_seconds) + " - " + formatTime(duration));
+        }
+
+        setPlayerPanel();
+
     }
 
     private String formatTime(int s) {
@@ -84,11 +87,8 @@ public class PlayerController extends Thread implements ActionListener, LineList
     @Override
     public void run() {
         while (running) {
-            if (playing) {
-                updatePlayer();
-            }
 
-            setPlayerPanel();
+            updatePlayer();
 
             try {
                 sleep(10);
@@ -98,24 +98,27 @@ public class PlayerController extends Thread implements ActionListener, LineList
         }
     }
 
-    public void setPlayerPanel() {
+    private void setPlayerPanel() {
         String message = MusicPlayer.getInstance().getPlayer_message();
         String final_message = "";
-
-        playerPanel.showPlayerLabel();
-        mainWindow.enableWindow();
 
         switch (message) {
             case "Now Playing":
                 Track track = MusicPlayer.getInstance().getCurrent_track();
                 final_message = message + "  . . .  " + track.getTitle();
+                playerPanel.showPlayerLabel();
+                mainWindow.enableWindow();
                 break;
             case "Downloading":
-                mainWindow.disableWindow();
                 playerPanel.showDownloadBar();
+                playerPanel.updateDownloadBar();
+                mainWindow.revalidate();
+                mainWindow.disableWindow();
                 break;
             default:
                 final_message = message + "    . . . . . . . . . . . . ";
+                playerPanel.showPlayerLabel();
+                mainWindow.enableWindow();
                 break;
         }
         playerPanel.setPlayer_label(final_message);
