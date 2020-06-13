@@ -45,7 +45,7 @@ public class MusicController implements ActionListener, MouseListener  {
     public void mousePressed(MouseEvent e) {
         JTable table =(JTable) e.getSource();
         int selected_row = table.getSelectedRow();
-
+        //reprodueix el track que l'usuari a fet doble clic, en el panel de Musica del sistema
         if (e.getClickCount() == 2 && selected_row != -1) {
             Track track = tracklist.get(selected_row);
             homeController.initializePlayer();
@@ -92,8 +92,8 @@ public class MusicController implements ActionListener, MouseListener  {
             mainWindow.showError("No hi ha llistes, clica \"New Playlist\" per crear una.");
         } else {
             if (selected_row >= 0) {
+                //omplim una llista d'opcions on surten els noms de les playlists de l'usuari per fer escollir a l'usuari
                 ArrayList<String> options = new ArrayList<>();
-
                 for (Playlist p:user_playlists) {
                     options.add(p.getName());
                 }
@@ -102,13 +102,13 @@ public class MusicController implements ActionListener, MouseListener  {
                 int selected_id = options.indexOf(option);
 
                 if(selected_id != -1){
+                    //creem una nova instancia de playlistTrack on estan els valors de la playlist,  el track i la puntuació
                     int playlist_id = user_playlists.get(selected_id).getId();
                     int track_id = tracklist.get(selected_row).getId();
-
                     float rating = getTrackRating(track_id);
 
                     PlaylistTrack playlistTrack = new PlaylistTrack(playlist_id,track_id,rating);
-
+                    //l'enviem al servidor
                     ObjectMessage output_obj = new ObjectMessage(playlistTrack,"add_playlist_track");
                     ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
                 }

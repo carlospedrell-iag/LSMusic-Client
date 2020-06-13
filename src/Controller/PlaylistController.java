@@ -27,7 +27,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     public PlaylistController(MainWindow mainWindow, HomeController homeController) {
         MusicPlayer.getInstance().setPlaylistController(this);
 
-        //this.start();
         this.mainWindow = mainWindow;
         this.playlistPanel = mainWindow.getHomePanel().getPlaylistPanel();
         this.homeController = homeController;
@@ -37,12 +36,13 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
 
     @Override
     public void update(LineEvent event) {
+        //si el music player acaba de començar a reproduir una canço
         if(event.getType() == LineEvent.Type.START){
             System.out.println("LINE EVVENT START FROM PLAYLIST");
             playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
 
         }
-
+        //si el music player s'acaba d'aturar
         if(event.getType() == LineEvent.Type.STOP){
             System.out.println("LINE EVVENT STOP FROM PLAYLIST");
             playlistPanel.resetPlaying(MusicPlayer.getInstance().getQueue_index());
@@ -76,9 +76,11 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
             case "delete_track":
                 deleteTrack();
                 homeController.refreshAll();
+                break;
             case "back":
                 setShowFollowedPlaylists(false);
                 homeController.refreshAll();
+                break;
         }
     }
 
@@ -113,7 +115,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
 
             if (!user_playlists.isEmpty()) {
                 JTabbedPane tabbedPane = playlistPanel.getTabbedPane();
-
+                //protegeix el cas on s'ha eliminat una playlist, es posa l'index a l'ultima playlist de l'usuari
                 if (tab_index > user_playlists.size() - 1) {
                     tab_index = user_playlists.size() - 1;
                 }
@@ -146,12 +148,14 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
         //demanem al servidor la llista de playlists de l'usuari
         User playlist_user;
         if(showFollowedPlaylists){
+            //si estem en mode mirar playlists d'usuaris demanara la playlist de l'usuari seguit seleccionat
             playlist_user = this.followedUser;
             System.out.println("Showing playlists of: " + playlist_user.getName());
         } else {
+            //si no demanem les playlists de l'usuari en sessió
             playlist_user = Session.getInstance().getUser();
         }
-
+        //request al servidor
         ObjectMessage output_obj = new ObjectMessage(playlist_user, "request_playlists");
         ObjectMessage received_obj = ServerConnector.getInstance().sendObject(output_obj);
 
@@ -179,6 +183,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
 
     private void deletePlaylist() {
         if (!user_playlists.isEmpty()) {
+            //omple una llista d'opcions amb les llistes de l'usuari per que agafi una
             ArrayList<String> options = new ArrayList<>();
 
             for (Playlist p : user_playlists) {
@@ -203,13 +208,15 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private void rateTrack() {
-
+        //agafem l'index del track seleccionat
         int playlist_index = playlistPanel.getTabbedPane().getSelectedIndex();
         int track_index = getSelectedTrackIndex();
 
         if (track_index != -1) {
+            //demanem per GUI la puntuació
             int rating = mainWindow.showRateDialog("Puntuació", "Puntuar");
             if (rating != -1) {
+                //agafem les id's absolutes per fer la petició al servior
                 int playlist_id = getAbsolutePlaylistId(playlist_index);
                 int track_id = getAbsoluteTrackId(playlist_index, track_index);
 
@@ -228,7 +235,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
         int track_index = getSelectedTrackIndex();
 
         if (track_index != -1) {
-
+            //agafem les id's absolutes per fer la petició al servior
             int playlist_id = getAbsolutePlaylistId(playlist_index);
             int track_id = getAbsoluteTrackId(playlist_index, track_index);
 
@@ -245,17 +252,17 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     }
 
     private int getAbsolutePlaylistId(int index) {
-        //Ens retorna el id absolut de la playlist en la base de dades (no el id de la playlist en la interficie, que seria el relatiu)
+        //Ens retorna el id absolut de la playlist en la base de dades (no el index de la playlist en la interficie)
         return user_playlists.get(index).getId();
     }
 
     private int getAbsoluteTrackId(int id_playlist, int index_track) {
-        //Ens retorna el id absolut del track en la base de dades (no el id del track en la interficie, que seria el relatiu)
+        //Ens retorna el id absolut del track en la base de dades (no el index del track en la interficie)
         return user_playlists.get(id_playlist).getTracks().get(index_track).getId();
     }
 
     private Track getTrack(int id_playlist, int index_track) {
-        //Ens retorna el id absolut del track en la base de dades (no el id del track en la interficie, que seria el relatiu)
+        //Ens retorna el Track de la playlist
         return user_playlists.get(id_playlist).getTracks().get(index_track);
     }
 
@@ -304,7 +311,6 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
         } else {
             playlistPanel.setUserMode();
         }
-
     }
 
     @Override

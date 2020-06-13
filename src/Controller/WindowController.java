@@ -19,7 +19,4 @@ public class WindowController implements ActionListener {
         mainWindow.switchPanel(e.getActionCommand());
     }
 
-    public MainWindow getMainWindow() {
-        return mainWindow;
-    }
 }

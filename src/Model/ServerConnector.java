@@ -66,13 +66,13 @@ public class ServerConnector {
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(om);
             oos.flush();
+
             //esperem rebre el file size
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             this.file_length = ois.readInt();
-
             System.out.println("File size: " + this.file_length);
 
-            //rebem l'arxiu
+            //input llegeix del socket, output escriu al fitxer del client
             InputStream in = socket.getInputStream();
             OutputStream out = new FileOutputStream(path);
 
@@ -98,8 +98,6 @@ public class ServerConnector {
         }
     }
 
-
-
     private String getFileExtension(String path) {
         int lastIndexOf = path.lastIndexOf(".");
         if (lastIndexOf == -1) {
@@ -110,7 +108,6 @@ public class ServerConnector {
 
     private void setConfig(){
         final String config_path = "./config.json";
-
         try {
             BufferedReader br = new BufferedReader(new FileReader(config_path));
             JsonElement jelement = new JsonParser().parse(br);
@@ -118,7 +115,6 @@ public class ServerConnector {
 
             this.client_port = jobject.get("client_port").getAsInt();
             this.ip = jobject.get("ip").getAsString();
-
         } catch (IOException e){
             e.printStackTrace();
         }

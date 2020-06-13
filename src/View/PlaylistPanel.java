@@ -176,7 +176,7 @@ public class PlaylistPanel {
         backButtonPanel.add(back_button,BorderLayout.WEST);
         backButtonPanel.add(title_label);
     }
-    //TODO: abrir, añadir un tema a una lista vacia (la primera), eliminar, se va el label de Playlist
+    //TODO: bug: abrir, añadir un tema a una lista vacia (la primera), eliminar, se va el label de Playlist
     public void setUserMode(){
         backButtonPanel.removeAll();
         JLabel title_label = new JLabel("Your Playlists");

@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ObjectMessage implements Serializable {
-    private Object object;
-    private String message;
-    private ArrayList<String> errors;
-    private String extra;
+    private Object object; //L'objecte principal a enviar
+    private String message; //El missatge on está l'instruccio que el servidor reb, per exemple "delete_user"
+    private ArrayList<String> errors; //si hi ha cap error s'omple aquesta llista amb els errors corresponents
+    private String extra; //si s'ha d'afegir un missatge o valor extra
 
     public ObjectMessage(){
         this.errors = new ArrayList<>();
@@ -20,6 +20,7 @@ public class ObjectMessage implements Serializable {
     }
 
     public void printErrors(){
+        //imprimeix errors per consola
         if(!errors.isEmpty()){
             System.out.println("Error/s enviats a client:");
         }

@@ -47,7 +47,7 @@ public class MainWindow extends JFrame {
         registerPanel = new RegisterPanel();
 
         //el primer panel per default es el de login
-        setContentPane(loginPanel.getMain_panel());
+        setContentPane(loginPanel);
     }
 
     public void switchPanel(String panel_name) {
@@ -58,7 +58,7 @@ public class MainWindow extends JFrame {
                 revalidate();
                 break;
             case "login":
-                setContentPane(loginPanel.getMain_panel());
+                setContentPane(loginPanel);
                 revalidate();
                 break;
 

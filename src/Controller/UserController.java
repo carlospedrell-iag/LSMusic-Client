@@ -57,7 +57,7 @@ public class UserController implements MouseListener, ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
             case "follow":
-                String name = mainWindow.showInputDialog("Seguir Usuari","Escriu el nom de l'usuari:");
+                String name = mainWindow.showInputDialog("Escriu el nom de l'usuari:","Seguir Usuari");
                 if(name != null){
                     if(name.isBlank()){
                         mainWindow.showError("El camp no pot estar buit.");
@@ -72,6 +72,19 @@ public class UserController implements MouseListener, ActionListener {
                         updateTable();
                     }
                 }
+                break;
+            case "unfollow":
+                //agafa el nom de l'usuari seleccionat i fa una peticio al servidor per eliminar-lo
+                JTable table = userPanel.getUser_table();
+                int selected_row = table.getSelectedRow();
+                if(selected_row != -1){
+                    String followed_user = (String)table.getValueAt(selected_row,0);
+                    unfollowUser(followed_user);
+                    updateTable();
+                } else {
+                    mainWindow.showError("No has seleccionat cap usuari.");
+                }
+
                 break;
         }
     }
@@ -105,6 +118,12 @@ public class UserController implements MouseListener, ActionListener {
         ObjectMessage input_om = ServerConnector.getInstance().sendObject(output_om);
     }
 
+    private void unfollowUser(String name){
+        ObjectMessage output_om = new ObjectMessage(Session.getInstance().getUser(),"unfollow_user");
+        output_om.setExtra(name);
+        ObjectMessage input_om = ServerConnector.getInstance().sendObject(output_om);
+    }
+
     public ArrayList<User> getFollowedUsers() {
         return followedUsers;
     }
@@ -113,7 +132,6 @@ public class UserController implements MouseListener, ActionListener {
     public void mouseClicked(MouseEvent e) {
 
     }
-
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -129,6 +147,4 @@ public class UserController implements MouseListener, ActionListener {
     public void mouseExited(MouseEvent e) {
 
     }
-
-
 }
