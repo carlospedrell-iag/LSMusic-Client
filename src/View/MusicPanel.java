@@ -15,7 +15,7 @@ public class MusicPanel {
     private JTable music_table;
     private JMenuItem addTrack;
 
-    private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Play Count", "Rating"};
+    private String[] columnNames = {"Title", "Artist", "Album", "Genre", "Play Count", "Avg Rating"};
 
     public MusicPanel(){
         music_table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

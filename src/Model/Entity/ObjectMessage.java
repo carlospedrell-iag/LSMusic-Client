@@ -7,6 +7,7 @@ public class ObjectMessage implements Serializable {
     private Object object;
     private String message;
     private ArrayList<String> errors;
+    private String extra;
 
     public ObjectMessage(){
         this.errors = new ArrayList<>();
@@ -60,5 +61,17 @@ public class ObjectMessage implements Serializable {
 
     public void setObject(Object object) {
         this.object = object;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
     }
 }

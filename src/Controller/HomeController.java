@@ -38,7 +38,6 @@ public class HomeController implements ActionListener{
         homePanel.getPlayerPanel().setUpController(this.playerController);
         homePanel.getUserPanel().setUpController(this.userController);
     }
-    //TODO: PAUSE BUTTON
 
     @Override
     public void actionPerformed(ActionEvent e) {

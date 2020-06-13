@@ -57,11 +57,9 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
                 if (name != null) {
                     if (name.isBlank()) {
                         mainWindow.showError("El nom de la llista no pot estar buit.");
-                    }
-                    if (playlistExists(name)) {
+                    } else if (playlistExists(name)) {
                         mainWindow.showError("Aquesta llista ja existeix en la teva biblioteca.");
-                    }
-                    if (!name.isBlank() && !playlistExists(name)) {
+                    } else  {
                         newPlaylist(name);
                         updatePlaylists();
                     }
@@ -111,7 +109,7 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
         try {
             //recull info d'user de la DB i la envia a la vista per refrescar la taula
             this.user_playlists = requestPlaylists();
-            playlistPanel.refreshPlaylists(user_playlists);
+            playlistPanel.refreshPlaylists(user_playlists,showFollowedPlaylists);
 
             if (!user_playlists.isEmpty()) {
                 JTabbedPane tabbedPane = playlistPanel.getTabbedPane();

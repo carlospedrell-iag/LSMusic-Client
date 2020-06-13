@@ -61,7 +61,7 @@ public class MusicPlayer{
         }
         return instance;
     }
-    //TODO: repeatrack no funciona en el ultimo de la lista
+
     public void downloadTrack(Track track_request){
         String path = CACHE_PATH + track_request.getId() + getFileExtension(track_request.getPath());
 

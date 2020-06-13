@@ -24,7 +24,7 @@ public class PlaylistPanel {
     private JMenuItem deleteTrack;
     private JPopupMenu popupMenu;
 
-    private String[] columnNames = {"Playing","Title", "Artist", "Album", "Genre", "Your Rating"};
+    private String[] columnNames = {"Playing","Title", "Artist", "Album", "Genre", "Rating"};
 
     private String user_name = "";
     private LayoutManager defaultLayout;
@@ -86,7 +86,7 @@ public class PlaylistPanel {
         }
     }
 
-    public void refreshPlaylists(ArrayList<Playlist> playlists){
+    public void refreshPlaylists(ArrayList<Playlist> playlists, Boolean showFollowedPlaylists){
         tabbedPane.removeAll();
 
         int playlist_index = 0;
@@ -125,20 +125,22 @@ public class PlaylistPanel {
             table.setModel(model);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.getTableHeader().setReorderingAllowed(false);
-            table.setComponentPopupMenu(popupMenu);
+            //posem el popupmenu de eliminar i valorar nomes si estem mirant les nostres llistes
+            if(!showFollowedPlaylists){
+                table.setComponentPopupMenu(popupMenu);
+            }
+
 
             //Serveix per centrar el text ( el simbol ▶) en la columna playing
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment( JLabel.CENTER );
             table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
 
-
-
             JScrollPane scrollPane = new JScrollPane(table);
 
             tabbedPane.add(playlist.getName(), scrollPane);
             //actualitzem la cua de reproducció a nova llista
-            if(playlist_index == MusicPlayer.getInstance().getQueue_index()){
+            if(playlist_index == MusicPlayer.getInstance().getQueue_index() && !showFollowedPlaylists){
                 MusicPlayer.getInstance().setQueuePlaylist(playlist);
             }
 
@@ -169,12 +171,12 @@ public class PlaylistPanel {
 
 
         buttonPanel.removeAll();
-        backButtonPanel.removeAll();
+        backButtonPanel.removeAll(); //TODO: Da problemas
         backButtonPanel.setLayout(new BorderLayout());
         backButtonPanel.add(back_button,BorderLayout.WEST);
         backButtonPanel.add(title_label);
     }
-
+    //TODO: abrir, añadir un tema a una lista vacia (la primera), eliminar, se va el label de Playlist
     public void setUserMode(){
         backButtonPanel.removeAll();
         JLabel title_label = new JLabel("Your Playlists");

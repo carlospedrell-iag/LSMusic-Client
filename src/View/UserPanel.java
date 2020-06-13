@@ -12,6 +12,8 @@ public class UserPanel extends JPanel {
     private JPanel main_panel;
     private JTable user_table;
     private JButton follow_button;
+    private JPopupMenu popupMenu;
+    private JMenuItem unfollowUser;
     private final int WIDTH = 120;
 
     private String[] columnNames = {"Username"};
@@ -27,6 +29,14 @@ public class UserPanel extends JPanel {
 
         Icon addIcon = new ImageIcon("./resources/icons/add.png");
         follow_button.setIcon(addIcon);
+        follow_button.setActionCommand("follow");
+
+        //pop-up menu per deixar de seguir
+        popupMenu = new JPopupMenu();
+        unfollowUser = new JMenuItem("Deixar de Seguir");
+        unfollowUser.setActionCommand("unfollow");
+        popupMenu.add(unfollowUser);
+        user_table.setComponentPopupMenu(popupMenu);
 
     }
 
@@ -50,6 +60,8 @@ public class UserPanel extends JPanel {
 
     public void setUpController(UserController controller){
         user_table.addMouseListener(controller);
+        unfollowUser.addActionListener(controller);
+        follow_button.addActionListener(controller);
     }
 
     public JPanel getMain_panel() {
