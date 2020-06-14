@@ -2,6 +2,7 @@ package View;
 
 import Controller.PlaylistController;
 import Model.Entity.Playlist;
+import Model.Entity.Session;
 import Model.Entity.Track;
 import Model.MusicPlayer;
 
@@ -50,7 +51,14 @@ public class PlaylistPanel {
 
     }
 
-    public void refreshPlaying(int queue_index){
+    public void refreshPlaying(int queue_index, Boolean showFollowedPlaylists){
+        String current_user;
+        if(!showFollowedPlaylists){
+            current_user = Session.getInstance().getUser().getName();
+        } else {
+            current_user = user_name;
+        }
+
         if(queue_index != -1){
             //Hem de extreure el Jtable de dins del Jscrollpane de dins del Jtabbedpane......
             JScrollPane scrollPane = (JScrollPane)tabbedPane.getComponentAt(queue_index);
@@ -59,7 +67,7 @@ public class PlaylistPanel {
             TableModel model = table.getModel();
             //actualitzem el simbol de playing en la taula
             for (int i = 0; i < model.getRowCount(); i++) {
-                model.setValueAt(isPlaying(queue_index,i),i,0);
+                model.setValueAt( isPlaying(queue_index, i, current_user), i,0);
             }
             table.setModel(model);
             JViewport viewport = new JViewport();
@@ -87,6 +95,13 @@ public class PlaylistPanel {
     }
 
     public void refreshPlaylists(ArrayList<Playlist> playlists, Boolean showFollowedPlaylists){
+        String current_user;
+        if(!showFollowedPlaylists){
+            current_user = Session.getInstance().getUser().getName();
+        } else {
+            current_user = user_name;
+        }
+
         tabbedPane.removeAll();
 
         int playlist_index = 0;
@@ -100,7 +115,7 @@ public class PlaylistPanel {
             };
             model.setColumnIdentifiers(columnNames);
 
-            int queue_index = 0;
+            int track_index = 0;
             for (Track track : playlist.getTracks()) {
 
                 String rating;
@@ -110,8 +125,9 @@ public class PlaylistPanel {
                 } else {
                     rating = track.getStarRating();
                 }
+
                 model.addRow(new Object[]{
-                        isPlaying(playlist_index,queue_index),
+                        isPlaying(playlist_index,track_index, current_user),
                         track.getTitle(),
                         track.getArtist(),
                         track.getAlbum(),
@@ -119,7 +135,7 @@ public class PlaylistPanel {
                         rating
                 });
 
-                queue_index++;
+                track_index++;
             }
 
             table.setModel(model);
@@ -130,7 +146,6 @@ public class PlaylistPanel {
                 table.setComponentPopupMenu(popupMenu);
             }
 
-
             //Serveix per centrar el text ( el simbol ▶) en la columna playing
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment( JLabel.CENTER );
@@ -139,8 +154,8 @@ public class PlaylistPanel {
             JScrollPane scrollPane = new JScrollPane(table);
 
             tabbedPane.add(playlist.getName(), scrollPane);
-            //actualitzem la cua de reproducció a nova llista
-            if(playlist_index == MusicPlayer.getInstance().getQueue_index() && !showFollowedPlaylists){
+            //actualitzem la cua de reproducció per si la playlist que estem refrescant té un track nou
+            if((playlist_index == MusicPlayer.getInstance().getQueue_index()) && current_user == MusicPlayer.getInstance().getUser_name()){
                 MusicPlayer.getInstance().setQueuePlaylist(playlist);
             }
 
@@ -169,14 +184,13 @@ public class PlaylistPanel {
         Font font = title_label.getFont();
         title_label.setFont(new Font(font.getName(),Font.PLAIN,16));
 
-
         buttonPanel.removeAll();
-        backButtonPanel.removeAll(); //TODO: Da problemas
+        backButtonPanel.removeAll();
         backButtonPanel.setLayout(new BorderLayout());
         backButtonPanel.add(back_button,BorderLayout.WEST);
         backButtonPanel.add(title_label);
     }
-    //TODO: bug: abrir, añadir un tema a una lista vacia (la primera), eliminar, se va el label de Playlist
+
     public void setUserMode(){
         backButtonPanel.removeAll();
         JLabel title_label = new JLabel("Your Playlists");
@@ -204,8 +218,9 @@ public class PlaylistPanel {
         this.tabbedPane = tabbedPane;
     }
 
-    private String isPlaying(int queue_index, int track_index){
-        if(MusicPlayer.getInstance().getQueue_index() == queue_index && MusicPlayer.getInstance().getTrack_index() == track_index){
+    private String isPlaying(int queue_index, int track_index, String current_user){
+
+        if(MusicPlayer.getInstance().getQueue_index() == queue_index && MusicPlayer.getInstance().getTrack_index() == track_index && MusicPlayer.getInstance().getUser_name() == current_user ){
             return "▶";
         } else {
             return "";

@@ -48,11 +48,11 @@ public class HomeController implements ActionListener{
             case "sign_out":
                 int dialogResult = mainWindow.showConfirmMessage("Vols Sortir?");
                 if(dialogResult == JOptionPane.YES_OPTION){
+                    MusicPlayer.getInstance().stopTrack();
+                    MusicPlayer.getInstance().deleteTrack();
+                    MusicPlayer.getInstance().destroy();
                     mainWindow.switchPanel("login");
                 }
-                MusicPlayer.getInstance().stopTrack();
-                MusicPlayer.getInstance().deleteTrack();
-                MusicPlayer.getInstance().destroy();
                 break;
         }
     }
@@ -71,7 +71,6 @@ public class HomeController implements ActionListener{
     }
 
     public void setPlaylistUser(String user_name){
-        MusicPlayer.getInstance().resetQueue();
         playlistController.setFollowedUser(user_name);
         playlistController.setShowFollowedPlaylists(true);
     }

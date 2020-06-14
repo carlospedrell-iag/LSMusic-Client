@@ -23,11 +23,14 @@ public class MusicPlayer{
     private int track_id = -1;
     private int track_index = -1;
     private int queue_index = -1;
+    private String user_name = "";
+
     private Boolean repeatTrack = false;
     private Boolean repeatList = false;
     private String player_message = "No Music Playing";
     private Track current_track;
     private Playlist queue;
+
 
 
     private volatile Boolean playing;
@@ -115,8 +118,9 @@ public class MusicPlayer{
     }
 
     public void nextTrack(){
-        int nTracks = queue.getTracks().size();
         if(track_index != -1){
+            int nTracks = queue.getTracks().size();
+
             //si no es l'ultim track de la queue
             if(track_index < nTracks - 1){
                 if(!repeatTrack ){
@@ -183,11 +187,13 @@ public class MusicPlayer{
         }
     }
 
-    public void setQueue(Playlist queue,int queue_index, int track_index){
-        System.out.println("Track index: " + track_index);
+    public void setQueue(Playlist queue,int queue_index, int track_index, String user_name){
         this.queue = queue;
         this.queue_index = queue_index;
         this.track_index = track_index;
+        this.user_name = user_name;
+
+        System.out.println("Queue set to user: " + user_name + " qi: " + queue_index);
     }
 
     public void setQueuePlaylist(Playlist queue){
@@ -267,5 +273,9 @@ public class MusicPlayer{
 
     public void setRepeatTrack(Boolean repeatTrack) {
         this.repeatTrack = repeatTrack;
+    }
+
+    public String getUser_name() {
+        return user_name;
     }
 }

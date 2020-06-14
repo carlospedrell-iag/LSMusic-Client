@@ -24,6 +24,8 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     private Boolean showFollowedPlaylists = false; //si es true, sortiren les playlists de l'usuari amic demanat
     private User followedUser;
 
+
+
     public PlaylistController(MainWindow mainWindow, HomeController homeController) {
         MusicPlayer.getInstance().setPlaylistController(this);
 
@@ -38,13 +40,11 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
     public void update(LineEvent event) {
         //si el music player acaba de començar a reproduir una canço
         if(event.getType() == LineEvent.Type.START){
-            System.out.println("LINE EVVENT START FROM PLAYLIST");
-            playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index());
+            playlistPanel.refreshPlaying(MusicPlayer.getInstance().getQueue_index(), showFollowedPlaylists);
 
         }
         //si el music player s'acaba d'aturar
         if(event.getType() == LineEvent.Type.STOP){
-            System.out.println("LINE EVVENT STOP FROM PLAYLIST");
             playlistPanel.resetPlaying(MusicPlayer.getInstance().getQueue_index());
         }
     }
@@ -93,7 +93,15 @@ public class PlaylistController implements ActionListener, MouseListener, LineLi
             Track track = getTrack(playlist_id, table.getSelectedRow());
             int track_index = table.getSelectedRow();
 
-            MusicPlayer.getInstance().setQueue(user_playlists.get(playlist_id), playlist_id, track_index);
+            String user_name;
+            if(!showFollowedPlaylists) {
+                user_name = Session.getInstance().getUser().getName();
+            } else {
+                user_name = followedUser.getName();
+            }
+            MusicPlayer.getInstance().setQueue(user_playlists.get(playlist_id), playlist_id, track_index, user_name);
+
+
             MusicPlayer.getInstance().setAndPlayTrack(track);
             homeController.initializePlayer();
 

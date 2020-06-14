@@ -21,6 +21,9 @@ public class MusicPanel {
         music_table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         music_table.getTableHeader().setReorderingAllowed(false);
         music_table.getTableHeader().setEnabled(false);
+        music_table.setToolTipText("Doble clic sobre una cançó per reproduir-la.\nClic dret sobre una cançó per afegir-la a una llista.");
+
+
         //pop-up menu per afegir tracks a la llista
         JPopupMenu popupMenu = new JPopupMenu();
         addTrack = new JMenuItem("Afegir a Llista");
